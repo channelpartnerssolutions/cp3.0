@@ -1,11 +1,26 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 
-const partnerPhotos = [
+type PartnerPhoto = {
+  name: string;
+  title: string;
+  caption: string;
+  credentialNote?: string;
+  href: string;
+  image: string;
+  imageAlt: string;
+  overlayOpacity: string;
+};
+
+const partnerPhotos: PartnerPhoto[] = [
   {
     name: "Best Buy",
     title: "Best Buy",
     caption: "Approved 3PL Provider",
+    // TODO(content): confirm wording
+    credentialNote: "Approved provider for Best Buy U.S. and Canada",
+    href: "/best-buy-approved-3pl-provider",
     image: "/images/homepage/retailers/bestbuy.png",
     // TODO(content): confirm image descriptions
     imageAlt: "Channel Partners merchandiser at a Best Buy store",
@@ -15,6 +30,7 @@ const partnerPhotos = [
     name: "Target",
     title: "Target",
     caption: "Preferred Merchandising Partner",
+    href: "/target-preferred-merchandising-partner",
     image: "/images/homepage/retailers/target.jpg",
     imageAlt: "Channel Partners merchandiser at a Target store",
     overlayOpacity: "opacity-33",
@@ -46,15 +62,16 @@ export function Retailers() {
         <div className="mt-6 flex w-full flex-col gap-6">
           <div className="flex w-full flex-col gap-4 md:flex-row">
             {partnerPhotos.map((partner) => (
-              <div
+              <Link
                 key={partner.name}
-                className="relative flex h-[280px] flex-1 items-center justify-center overflow-hidden rounded-lg bg-near-black md:h-[360px]"
+                href={partner.href}
+                className="group relative flex h-[280px] flex-1 items-center justify-center overflow-hidden rounded-lg bg-near-black focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cerulean md:h-[360px]"
               >
                 <Image
                   src={partner.image}
                   alt={partner.imageAlt}
                   fill
-                  className={`object-cover ${partner.overlayOpacity}`}
+                  className={`object-cover transition-transform duration-500 group-hover:scale-105 ${partner.overlayOpacity}`}
                 />
                 <div className="relative flex flex-col items-center gap-1 px-4 text-center text-white">
                   <p className="header-3">
@@ -62,8 +79,11 @@ export function Retailers() {
                   </p>
                   <div className="h-px w-12 bg-white" />
                   <p className="text-base leading-6">{partner.caption}</p>
+                  {partner.credentialNote && (
+                    <p className="text-sm leading-5 text-white/80">{partner.credentialNote}</p>
+                  )}
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
 

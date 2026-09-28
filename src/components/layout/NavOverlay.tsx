@@ -14,8 +14,8 @@ const companyLinks = [
 ];
 
 const retailPartnerships = [
-  "Best Buy Approved 3PL Provider",
-  "Target Preferred Merchandising Partner",
+  { href: "/best-buy-approved-3pl-provider", label: "Best Buy Approved 3PL Provider" },
+  { href: "/target-preferred-merchandising-partner", label: "Target Preferred Merchandising Partner" },
 ];
 
 // TODO(content): add profile URLs. Links with an empty href are not rendered.
@@ -126,10 +126,16 @@ export function NavOverlay({
             Retail Partnerships
           </span>
           <div className="flex flex-wrap gap-2 text-base">
-            {retailPartnerships.map((item, i) => (
-              <span key={item} className="flex gap-2">
+            {retailPartnerships.map((link, i) => (
+              <span key={link.href} className="flex gap-2">
                 {i > 0 && <span>/</span>}
-                <span>{item}</span>
+                <Link
+                  href={link.href}
+                  onClick={onClose}
+                  className={`hover:text-cerulean ${isActive(link.href) ? "text-cerulean" : ""}`}
+                >
+                  {link.label}
+                </Link>
               </span>
             ))}
           </div>
