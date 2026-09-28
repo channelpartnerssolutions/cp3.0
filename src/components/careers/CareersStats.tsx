@@ -20,7 +20,7 @@ export function CareersStats() {
   ];
 
   return (
-    <section className="flex w-full flex-wrap items-start justify-center gap-x-6 gap-y-8 bg-white px-8 pt-12 pb-20 text-center text-black">
+    <section className="flex w-full flex-wrap items-start justify-center gap-x-6 gap-y-8 bg-white px-8 py-12 text-center text-black">
       {stats.map((stat) => (
         <div key={stat.label} className="flex w-[240px] flex-col items-center gap-6">
           {stat.animate === false ? (
