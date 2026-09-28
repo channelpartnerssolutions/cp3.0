@@ -9,16 +9,20 @@ const ICON_DIR = "/images/careers/icons";
 
 const ICON_ORDER = [1, 2, 3, 9, 4, 5, 6, 7, 8] as const;
 
-const ICON_SIZE: Record<number, { width: number; height: number }> = {
-  1: { width: 54, height: 44 },
-  2: { width: 42, height: 36 },
-  3: { width: 40, height: 40 },
-  4: { width: 45, height: 36 },
-  5: { width: 49, height: 30 },
-  6: { width: 32, height: 35 },
-  7: { width: 42, height: 36 },
-  8: { width: 32, height: 35 },
-  9: { width: 43, height: 43 },
+// Intrinsic sizes of each icon file. The active ("g") versions sit on a 44px
+// green circle, so they're larger than the inactive ("n") line icons and must
+// render at their own size. Each button reserves the larger footprint so the
+// row doesn't shift when the active icon changes.
+const ICON_SIZE: Record<number, { n: [number, number]; g: [number, number] }> = {
+  1: { n: [54, 41], g: [54, 44] },
+  2: { n: [42, 36], g: [44, 44] },
+  3: { n: [40, 40], g: [44, 44] },
+  4: { n: [45, 36], g: [45, 44] },
+  5: { n: [49, 30], g: [49, 44] },
+  6: { n: [32, 35], g: [44, 44] },
+  7: { n: [42, 36], g: [44, 44] },
+  8: { n: [32, 35], g: [44, 44] },
+  9: { n: [43, 43], g: [44, 44] },
 };
 
 type Solution = {
@@ -232,8 +236,9 @@ export function SolutionsCarousel() {
         <div className="col-span-12 mx-auto flex w-full max-w-[571px] flex-col items-start gap-6 xl:col-span-5 xl:col-start-7 xl:max-w-none">
           <div className="flex w-full flex-wrap items-center justify-between gap-x-2 gap-y-3">
             {ICON_ORDER.map((num) => {
-              const size = ICON_SIZE[num];
+              const sizes = ICON_SIZE[num];
               const isActive = num === solution.iconNumber;
+              const [width, height] = isActive ? sizes.g : sizes.n;
               const target = SOLUTIONS.find((s) => s.iconNumber === num);
               if (!target) return null;
               return (
@@ -242,7 +247,11 @@ export function SolutionsCarousel() {
                   type="button"
                   aria-label={target.title}
                   onClick={() => setIndex(SOLUTIONS.indexOf(target))}
-                  className="group relative cursor-pointer"
+                  className="group relative flex shrink-0 cursor-pointer items-center justify-center"
+                  style={{
+                    width: Math.max(sizes.n[0], sizes.g[0]),
+                    height: Math.max(sizes.n[1], sizes.g[1]),
+                  }}
                 >
                   <span className="pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded bg-near-black px-2 py-1 text-xs text-white opacity-0 transition-opacity duration-150 group-hover:opacity-100">
                     {target.title}
@@ -250,8 +259,8 @@ export function SolutionsCarousel() {
                   <Image
                     src={`${ICON_DIR}/cu-icon-${isActive ? "g" : "n"}${num}.svg`}
                     alt=""
-                    width={size.width}
-                    height={size.height}
+                    width={width}
+                    height={height}
                     unoptimized
                   />
                 </button>
