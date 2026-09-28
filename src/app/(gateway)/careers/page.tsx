@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Benefits } from "@/components/careers/Benefits";
 import { CareersHero } from "@/components/careers/CareersHero";
 import { CareersStats } from "@/components/careers/CareersStats";
 import { JobMap } from "@/components/careers/JobMap";
@@ -23,6 +24,9 @@ export default function CareersPage() {
       </FadeIn>
       <FadeIn>
         <SolutionsCarousel />
+      </FadeIn>
+      <FadeIn>
+        <Benefits />
       </FadeIn>
     </>
   );
