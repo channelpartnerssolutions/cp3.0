@@ -175,6 +175,8 @@ export function JobMap() {
         (position) => {
           if (cancelled || hasActiveFilterRef.current) return;
           userLocationRef.current = [position.coords.latitude, position.coords.longitude];
+          // Reflect the automatic recenter in the dropdown so it reads as an active filter.
+          setUseCurrentLocation(true);
           // If the map isn't built yet, its first framing pass picks this up.
           applyFramingRef.current?.();
         },
