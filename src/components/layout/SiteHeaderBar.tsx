@@ -28,9 +28,10 @@ export function SiteHeaderBar({
       <Link href="/" aria-label="Channel Partners home">
         <BrandMark theme={barTheme} />
       </Link>
-      <nav className="flex flex-wrap items-center gap-8">
+      <nav className="flex items-center gap-8">
+        {/* Below lg the inline links collapse into the hamburger menu (NavOverlay). */}
         <div
-          className={`flex flex-wrap items-center gap-8 transition-opacity duration-300 ${
+          className={`hidden items-center gap-8 transition-opacity duration-300 lg:flex ${
             menuOpen ? "pointer-events-none opacity-0" : "opacity-100"
           }`}
         >

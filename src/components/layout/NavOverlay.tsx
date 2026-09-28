@@ -25,7 +25,18 @@ const socialLinks = [
   { href: "", label: "YouTube" },
 ].filter((link) => link.href);
 
-export function NavOverlay({ open, onClose }: { open: boolean; onClose: () => void }) {
+type SectionLinks = { title: string; links: { href: string; label: string }[] };
+
+export function NavOverlay({
+  open,
+  onClose,
+  sectionLinks,
+}: {
+  open: boolean;
+  onClose: () => void;
+  // Links that sit inline in the header on desktop; repeated here below lg.
+  sectionLinks?: SectionLinks;
+}) {
   const pathname = usePathname();
   const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
@@ -71,6 +82,24 @@ export function NavOverlay({ open, onClose }: { open: boolean; onClose: () => vo
             </Link>
           ))}
         </nav>
+
+        {sectionLinks && (
+          <div className="flex max-w-[600px] flex-col gap-2 text-white lg:hidden">
+            <span className="font-heading text-lg tracking-[3.24px] uppercase text-white">
+              {sectionLinks.title}
+            </span>
+            <div className="flex flex-wrap gap-2 text-base">
+              {sectionLinks.links.map((link, i) => (
+                <span key={link.href} className="flex gap-2">
+                  {i > 0 && <span>/</span>}
+                  <Link href={link.href} onClick={onClose} className="hover:text-cerulean">
+                    {link.label}
+                  </Link>
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="flex max-w-[600px] flex-col gap-2 text-white">
           <span className="font-heading text-lg tracking-[3.24px] uppercase text-white">

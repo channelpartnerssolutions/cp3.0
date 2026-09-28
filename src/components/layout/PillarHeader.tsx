@@ -70,9 +70,10 @@ export function PillarHeader({ pillar }: { pillar: PillarConfig }) {
               {pillar.switchLabel}
             </span>
           </Link>
-          <nav className="flex flex-wrap items-center gap-8">
+          <nav className="flex items-center gap-8">
+            {/* Below lg the inline links collapse into the hamburger menu (NavOverlay). */}
             <div
-              className={`flex flex-wrap items-center gap-8 transition-opacity duration-300 ${
+              className={`hidden items-center gap-8 transition-opacity duration-300 lg:flex ${
                 menuOpen ? "pointer-events-none opacity-0" : "opacity-100"
               }`}
             >
@@ -95,7 +96,18 @@ export function PillarHeader({ pillar }: { pillar: PillarConfig }) {
         </Container>
       </div>
       <HeaderSpacer height={headerHeight} cssVar="--pillar-header-height" />
-      <NavOverlay open={menuOpen} onClose={() => setMenuOpen(false)} />
+      <NavOverlay
+        open={menuOpen}
+        onClose={() => setMenuOpen(false)}
+        sectionLinks={{
+          title: pillar.label,
+          links: [
+            { href: `/${pillar.slug}/solutions`, label: "Solutions" },
+            { href: `/${pillar.slug}/about`, label: "Meet the Team" },
+            { href: `/contact?source=${pillar.slug}`, label: pillar.ctaLabel },
+          ],
+        }}
+      />
     </header>
   );
 }
