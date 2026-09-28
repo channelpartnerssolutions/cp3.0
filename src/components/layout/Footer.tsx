@@ -11,11 +11,12 @@ const companyLinks = [
   { href: "/contact", label: "Contact" },
 ];
 
+// TODO(content): add URLs. Links with an empty href are not rendered.
 const legalLinks = [
-  { href: "#", label: "Privacy" },
-  { href: "#", label: "Terms" },
-  { href: "#", label: "Sitemap" },
-];
+  { href: "", label: "Privacy" },
+  { href: "", label: "Terms" },
+  { href: "", label: "Sitemap" },
+].filter((link) => link.href);
 
 export function Footer() {
   return (
@@ -90,6 +91,8 @@ export function Footer() {
               key={label}
               href={href}
               aria-label={label}
+              target="_blank"
+              rel="noreferrer"
               className="text-white/70 hover:text-cerulean"
             >
               <Icon className="size-5" />

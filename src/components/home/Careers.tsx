@@ -145,7 +145,7 @@ function CareerCard({ job }: { job: Job }) {
       onBlur={() => setOpen(false)}
       onClick={() => setOpen(true)}
     >
-      <Image src={job.image} alt="" fill unoptimized className="object-cover" />
+      <Image src={job.image} alt={`${job.title} at Channel Partners`} fill unoptimized className="object-cover" />
       <div
         className={`absolute inset-0 bg-gradient-to-t from-black/70 via-black/0 to-black/0 transition-opacity duration-[500ms] ease-out ${
           open ? "opacity-0" : "opacity-100"

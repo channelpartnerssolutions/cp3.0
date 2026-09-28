@@ -7,6 +7,8 @@ const partnerPhotos = [
     title: "Best Buy",
     caption: "Approved 3PL Provider",
     image: "/images/homepage/retailers/bestbuy.png",
+    // TODO(content): confirm image descriptions
+    imageAlt: "Channel Partners merchandiser at a Best Buy store",
     overlayOpacity: "opacity-50",
   },
   {
@@ -14,17 +16,18 @@ const partnerPhotos = [
     title: "Target",
     caption: "Preferred Merchandising Partner",
     image: "/images/homepage/retailers/target.jpg",
+    imageAlt: "Channel Partners merchandiser at a Target store",
     overlayOpacity: "opacity-33",
   },
 ];
 
 const retailerLogos = [
-  { file: "walmart-black.svg", w: 188, h: 35 },
-  { file: "lowes-retailers.svg", w: 100, h: 100 },
-  { file: "homedepot-retailers.svg", w: 73, h: 74 },
-  { file: "costco.svg", w: 149, h: 53 },
-  { file: "samsclub.svg", w: 156, h: 30 },
-  { file: "rei.svg", w: 88, h: 56 },
+  { name: "Walmart", file: "walmart-black.svg", w: 188, h: 35 },
+  { name: "Lowe's", file: "lowes-retailers.svg", w: 100, h: 100 },
+  { name: "The Home Depot", file: "homedepot-retailers.svg", w: 73, h: 74 },
+  { name: "Costco", file: "costco.svg", w: 149, h: 53 },
+  { name: "Sam's Club", file: "samsclub.svg", w: 156, h: 30 },
+  { name: "REI", file: "rei.svg", w: 88, h: 56 },
 ];
 
 export function Retailers() {
@@ -49,7 +52,7 @@ export function Retailers() {
               >
                 <Image
                   src={partner.image}
-                  alt=""
+                  alt={partner.imageAlt}
                   fill
                   className={`object-cover ${partner.overlayOpacity}`}
                 />
@@ -73,7 +76,7 @@ export function Retailers() {
               >
                 <Image
                   src={`/images/homepage/brands/${logo.file}`}
-                  alt=""
+                  alt={logo.name}
                   fill
                   className="object-contain"
                 />

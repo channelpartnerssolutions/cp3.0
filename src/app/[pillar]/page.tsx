@@ -1,7 +1,15 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getPillar } from "@/lib/pillars";
 import { StubPage } from "@/components/ui/StubPage";
 import { ExperientialHome } from "@/components/experiential/ExperientialHome";
+
+// TODO(content): final page descriptions
+export async function generateMetadata({ params }: PageProps<"/[pillar]">): Promise<Metadata> {
+  const pillar = getPillar((await params).pillar);
+  if (!pillar) return {};
+  return { title: pillar.label, description: `${pillar.label} from Channel Partners.` };
+}
 
 export default async function PillarHomePage({
   params,

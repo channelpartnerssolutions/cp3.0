@@ -42,7 +42,11 @@ export function BrandMark({ className = "", theme = "dark" }: { className?: stri
   const wordmarkColor = theme === "dark" ? "text-white" : "text-near-black";
 
   return (
-    <div className={`relative h-[30px] w-[177.568px] overflow-hidden ${className}`}>
+    <div
+      role="img"
+      aria-label="Channel Partners"
+      className={`relative h-[30px] w-[177.568px] overflow-hidden ${className}`}
+    >
       <div
         className={wordmarkColor}
         style={{ position: "absolute", top: "54.35%", bottom: "3.76%", left: "33.15%", right: 0 }}

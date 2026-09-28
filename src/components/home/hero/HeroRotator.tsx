@@ -155,8 +155,11 @@ export function HeroRotator() {
 
       <div className="@container relative z-10 mx-auto flex h-full w-full max-w-[var(--grid-max-width)] flex-col items-center justify-center px-[var(--grid-margin)] md:px-[var(--grid-margin-md)]">
         <h1 className="relative flex h-[8.6cqw] min-h-[58px] items-center justify-center gap-[1.15cqw] whitespace-nowrap font-heading text-[5cqw] uppercase leading-[8.6cqw] tracking-[0.14em] text-white">
-          <span>Where</span>
+          {/* Screen readers and crawlers get the plain headline; the rotating words are visual only. */}
+          <span className="sr-only">Where Brand Meets Belief</span>
+          <span aria-hidden="true">Where</span>
           <span
+            aria-hidden="true"
             ref={slotARef}
             className="inline-block h-[8.6cqw] min-h-[58px] overflow-hidden transition-[width] duration-[800ms] ease-[cubic-bezier(.22,1,.36,1)]"
           >
@@ -171,8 +174,9 @@ export function HeroRotator() {
               ))}
             </span>
           </span>
-          <span>Meets</span>
+          <span aria-hidden="true">Meets</span>
           <span
+            aria-hidden="true"
             ref={slotBRef}
             className="inline-block h-[8.6cqw] min-h-[58px] overflow-hidden transition-[width] duration-[800ms] ease-[cubic-bezier(.22,1,.36,1)]"
           >

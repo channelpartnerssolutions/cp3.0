@@ -32,9 +32,12 @@ function FacebookIcon({ className }: IconProps) {
   );
 }
 
-export const SOCIAL_LINKS = [
-  { label: "LinkedIn", href: "#", Icon: LinkedInIcon },
-  { label: "Instagram", href: "#", Icon: InstagramIcon },
-  { label: "YouTube", href: "#", Icon: YouTubeIcon },
-  { label: "Facebook", href: "#", Icon: FacebookIcon },
+// TODO(content): add profile URLs. Links with an empty href are not rendered.
+const ALL_SOCIAL_LINKS = [
+  { label: "LinkedIn", href: "", Icon: LinkedInIcon },
+  { label: "Instagram", href: "", Icon: InstagramIcon },
+  { label: "YouTube", href: "", Icon: YouTubeIcon },
+  { label: "Facebook", href: "", Icon: FacebookIcon },
 ];
+
+export const SOCIAL_LINKS = ALL_SOCIAL_LINKS.filter((link) => link.href);

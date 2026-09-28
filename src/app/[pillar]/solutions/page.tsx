@@ -1,7 +1,15 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getPillar } from "@/lib/pillars";
 import { Container } from "@/components/ui/Container";
+
+// TODO(content): final page descriptions
+export async function generateMetadata({ params }: PageProps<"/[pillar]/solutions">): Promise<Metadata> {
+  const pillar = getPillar((await params).pillar);
+  if (!pillar) return {};
+  return { title: `${pillar.label} Solutions`, description: `${pillar.label} solutions from Channel Partners.` };
+}
 
 export default async function PillarSolutionsPage({
   params,

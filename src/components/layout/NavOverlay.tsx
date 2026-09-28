@@ -18,11 +18,12 @@ const retailPartnerships = [
   "Target Preferred Merchandising Partner",
 ];
 
+// TODO(content): add profile URLs. Links with an empty href are not rendered.
 const socialLinks = [
-  { href: "#", label: "LinkedIn" },
-  { href: "#", label: "Instagram" },
-  { href: "#", label: "YouTube" },
-];
+  { href: "", label: "LinkedIn" },
+  { href: "", label: "Instagram" },
+  { href: "", label: "YouTube" },
+].filter((link) => link.href);
 
 export function NavOverlay({ open, onClose }: { open: boolean; onClose: () => void }) {
   const pathname = usePathname();
@@ -105,16 +106,18 @@ export function NavOverlay({ open, onClose }: { open: boolean; onClose: () => vo
           </div>
         </div>
 
-        <div className="flex items-center gap-3 text-white">
-          {socialLinks.map((link, i) => (
-            <span key={link.label} className="flex items-center gap-3">
-              {i > 0 && <span>/</span>}
-              <a href={link.href} className="hover:text-cerulean">
-                {link.label}
-              </a>
-            </span>
-          ))}
-        </div>
+        {socialLinks.length > 0 && (
+          <div className="flex items-center gap-3 text-white">
+            {socialLinks.map((link, i) => (
+              <span key={link.label} className="flex items-center gap-3">
+                {i > 0 && <span>/</span>}
+                <a href={link.href} target="_blank" rel="noreferrer" className="hover:text-cerulean">
+                  {link.label}
+                </a>
+              </span>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

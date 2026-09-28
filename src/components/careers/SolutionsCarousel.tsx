@@ -220,7 +220,7 @@ export function SolutionsCarousel() {
             <div className="relative aspect-[558/685] w-full overflow-hidden rounded">
               <Image
                 src={solution.image}
-                alt=""
+                alt={`${solution.title} at Channel Partners`}
                 fill
                 unoptimized
                 className="object-cover"
