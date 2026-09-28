@@ -268,7 +268,7 @@ export function SolutionsCarousel() {
             })}
           </div>
 
-          <h2 className="header-2 text-black">{solution.title}</h2>
+          <h2 className="header-3 text-black">{solution.title}</h2>
 
           <p className="text-lg leading-7 text-black">{solution.description}</p>
 
@@ -278,7 +278,7 @@ export function SolutionsCarousel() {
               {solution.bullets.map((bullet) => (
                 <li
                   key={bullet}
-                  className="list-disc text-lg leading-7 text-black marker:text-cerulean"
+                  className="list-disc text-base leading-6 text-black marker:text-cerulean"
                 >
                   {bullet}
                 </li>
