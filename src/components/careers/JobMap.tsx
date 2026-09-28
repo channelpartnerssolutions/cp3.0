@@ -59,8 +59,19 @@ function escapeHtml(value: string): string {
     .replace(/'/g, "&#39;");
 }
 
+// iCIMS source tracking for every apply link that leaves the careers map
+// (list rows and map popups).
+const ICIMS_TRACKING = { iis: "website", iisn: "careers-map" };
+
 function applyUrlFor(job: Job): string {
-  return job.applyUrl || ICIMS_SEARCH_URL;
+  const base = job.applyUrl || ICIMS_SEARCH_URL;
+  try {
+    const url = new URL(base);
+    Object.entries(ICIMS_TRACKING).forEach(([key, value]) => url.searchParams.set(key, value));
+    return url.toString();
+  } catch {
+    return base;
+  }
 }
 
 type MarkerClusterGroup = LayerGroup & {
