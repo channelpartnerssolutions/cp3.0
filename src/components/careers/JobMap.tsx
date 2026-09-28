@@ -105,6 +105,8 @@ export function JobMap() {
   const applyFramingRef = useRef<(() => void) | null>(null);
   const framingAppliedRef = useRef(false);
   const geoCatchUpDoneRef = useRef(false);
+  // Set by Reset so a still-pending on-load location lookup doesn't recenter afterwards.
+  const autoLocateDismissedRef = useRef(false);
   const userMarkerRef = useRef<CircleMarker | null>(null);
 
   const loadedJobs = useJobs();
@@ -173,7 +175,7 @@ export function JobMap() {
     if (typeof navigator !== "undefined" && navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          if (cancelled || hasActiveFilterRef.current) return;
+          if (cancelled || hasActiveFilterRef.current || autoLocateDismissedRef.current) return;
           userLocationRef.current = [position.coords.latitude, position.coords.longitude];
           // Reflect the automatic recenter in the dropdown so it reads as an active filter.
           setUseCurrentLocation(true);
@@ -543,7 +545,15 @@ export function JobMap() {
     setStateFilter(value);
   };
 
+  // Back to the default starting view: no filters and no geolocation framing.
   const resetFilters = () => {
+    autoLocateDismissedRef.current = true;
+    geoCatchUpDoneRef.current = true;
+    userLocationRef.current = null;
+    userMarkerRef.current?.remove();
+    userMarkerRef.current = null;
+    mapRef.current?.closePopup();
+    mapRef.current?.fitBounds(NORTH_AMERICA_BOUNDS);
     setUseCurrentLocation(false);
     setGeoMessage("");
     setKeyword("");
