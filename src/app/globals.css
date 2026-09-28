@@ -186,6 +186,51 @@ body {
   }
 }
 
+/* Careers solutions carousel: on each change the photo slides in from the
+   side it's coming from (--slide-from, set per direction) while the text
+   fades up item by item a beat later. */
+@keyframes carousel-photo-in {
+  from {
+    opacity: 0;
+    transform: translateX(var(--slide-from, 48px));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.carousel-photo-in {
+  animation: carousel-photo-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.carousel-text-in > * {
+  animation: content-fade-in-up 0.5s ease-out both;
+}
+
+.carousel-text-in > :nth-child(1) {
+  animation-delay: 0.12s;
+}
+
+.carousel-text-in > :nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.carousel-text-in > :nth-child(3) {
+  animation-delay: 0.28s;
+}
+
+.carousel-text-in > :nth-child(4) {
+  animation-delay: 0.36s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carousel-photo-in,
+  .carousel-text-in > * {
+    animation: none;
+  }
+}
+
 @keyframes scroll-bounce {
   0%,
   20%,

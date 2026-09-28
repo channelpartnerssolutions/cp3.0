@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { Button } from "@/components/ui/Button";
 import { ICIMS_SEARCH_URL as ICIMS_BASE } from "@/lib/jobs";
 
@@ -194,11 +194,29 @@ const SOLUTIONS: Solution[] = [
 
 export function SolutionsCarousel() {
   const [index, setIndex] = useState(0);
+  // Which way the last change moved (1 = forward, -1 = back); 0 until the
+  // visitor first changes slides, so nothing animates on initial render.
+  const [direction, setDirection] = useState<1 | -1 | 0>(0);
   const solution = SOLUTIONS[index];
 
-  const go = (direction: 1 | -1) => {
-    setIndex((current) => (current + direction + SOLUTIONS.length) % SOLUTIONS.length);
+  const go = (step: 1 | -1) => {
+    setDirection(step);
+    setIndex((current) => (current + step + SOLUTIONS.length) % SOLUTIONS.length);
   };
+
+  const goTo = (next: number) => {
+    if (next === index) return;
+    setDirection(next > index ? 1 : -1);
+    setIndex(next);
+  };
+
+  // Warm the neighbouring photos so the slide-in doesn't play over a blank frame.
+  useEffect(() => {
+    [1, -1].forEach((step) => {
+      const img = new window.Image();
+      img.src = SOLUTIONS[(index + step + SOLUTIONS.length) % SOLUTIONS.length].image;
+    });
+  }, [index]);
 
   return (
     <section className="relative w-full overflow-hidden bg-white py-20">
@@ -222,7 +240,13 @@ export function SolutionsCarousel() {
 
         <div className="relative col-span-12 mx-auto w-full max-w-[460px] xl:col-span-4 xl:col-start-2 xl:max-w-none">
           <div className="absolute -left-6 -top-6 h-full w-full rounded bg-cerulean" aria-hidden />
-          <div className="relative aspect-[558/685] w-full overflow-hidden rounded">
+          <div
+            key={index}
+            className={`relative aspect-[558/685] w-full overflow-hidden rounded ${
+              direction ? "carousel-photo-in" : ""
+            }`}
+            style={{ "--slide-from": `${direction * 48}px` } as CSSProperties}
+          >
             <Image
               src={solution.image}
               alt={`${solution.title} at Channel Partners`}
@@ -246,7 +270,7 @@ export function SolutionsCarousel() {
                   key={num}
                   type="button"
                   aria-label={target.title}
-                  onClick={() => setIndex(SOLUTIONS.indexOf(target))}
+                  onClick={() => goTo(SOLUTIONS.indexOf(target))}
                   className="group relative flex shrink-0 cursor-pointer items-center justify-center"
                   style={{
                     width: Math.max(sizes.n[0], sizes.g[0]),
@@ -268,30 +292,35 @@ export function SolutionsCarousel() {
             })}
           </div>
 
-          <h2 className="header-3 text-black">{solution.title}</h2>
-
-          <p className="text-lg leading-7 text-black">{solution.description}</p>
-
-          <div className="flex flex-col items-start gap-3">
-            <h5 className="header-6 text-black">Perfect for people who:</h5>
-            <ul className="flex flex-col gap-1 pl-5">
-              {solution.bullets.map((bullet) => (
-                <li
-                  key={bullet}
-                  className="list-disc text-base leading-6 text-black marker:text-cerulean"
-                >
-                  {bullet}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <Button
-            href={`${ICIMS_BASE}&searchCategory=${solution.categoryId}`}
-            variant="primary"
+          <div
+            key={index}
+            className={`flex flex-col items-start gap-6 ${direction ? "carousel-text-in" : ""}`}
           >
-            {solution.ctaLabel}
-          </Button>
+            <h2 className="header-3 text-black">{solution.title}</h2>
+
+            <p className="text-lg leading-7 text-black">{solution.description}</p>
+
+            <div className="flex flex-col items-start gap-3">
+              <h5 className="header-6 text-black">Perfect for people who:</h5>
+              <ul className="flex flex-col gap-1 pl-5">
+                {solution.bullets.map((bullet) => (
+                  <li
+                    key={bullet}
+                    className="list-disc text-base leading-6 text-black marker:text-cerulean"
+                  >
+                    {bullet}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <Button
+              href={`${ICIMS_BASE}&searchCategory=${solution.categoryId}`}
+              variant="primary"
+            >
+              {solution.ctaLabel}
+            </Button>
+          </div>
         </div>
 
         <button
