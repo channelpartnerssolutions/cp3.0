@@ -197,7 +197,7 @@ export function SolutionsCarousel() {
   };
 
   return (
-    <section className="relative w-full overflow-hidden bg-white py-[91px]">
+    <section className="relative w-full overflow-hidden bg-white py-20">
       <div className="relative mx-auto flex max-w-[1440px] items-center px-[70px]">
         <button
           type="button"
@@ -214,8 +214,8 @@ export function SolutionsCarousel() {
           />
         </button>
 
-        <div className="flex w-full flex-col items-center gap-12 lg:flex-row lg:items-start lg:gap-[139px]">
-          <div className="relative w-full max-w-[558px] shrink-0">
+        <div className="flex w-full flex-col items-center gap-12 lg:flex-row lg:items-start lg:gap-20">
+          <div className="relative w-full max-w-[460px] shrink-0">
             <div className="absolute -left-6 -top-6 h-full w-full rounded bg-cerulean" aria-hidden />
             <div className="relative aspect-[558/685] w-full overflow-hidden rounded">
               <Image
@@ -228,7 +228,7 @@ export function SolutionsCarousel() {
             </div>
           </div>
 
-          <div className="flex w-full max-w-[571px] flex-col items-start gap-7">
+          <div className="flex w-full max-w-[571px] flex-col items-start gap-6">
             <div className="flex items-center gap-6">
               {ICON_ORDER.map((num) => {
                 const size = ICON_SIZE[num];
@@ -258,9 +258,9 @@ export function SolutionsCarousel() {
               })}
             </div>
 
-            <h2 className="header-1 text-black">{solution.title}</h2>
+            <h2 className="header-2 text-black">{solution.title}</h2>
 
-            <p className="text-xl leading-[30.66px] text-black">{solution.description}</p>
+            <p className="text-lg leading-7 text-black">{solution.description}</p>
 
             <div className="flex flex-col items-start gap-3">
               <h5 className="header-6 text-black">Perfect for people who:</h5>
@@ -268,7 +268,7 @@ export function SolutionsCarousel() {
                 {solution.bullets.map((bullet) => (
                   <li
                     key={bullet}
-                    className="list-disc text-xl leading-[30.66px] text-black marker:text-cerulean"
+                    className="list-disc text-lg leading-7 text-black marker:text-cerulean"
                   >
                     {bullet}
                   </li>
