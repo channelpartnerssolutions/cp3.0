@@ -1,11 +1,33 @@
 "use client";
 
+import {
+  BadgeCheck,
+  CalendarDays,
+  Car,
+  GraduationCap,
+  HeartPulse,
+  Hotel,
+  LifeBuoy,
+  PiggyBank,
+  Receipt,
+  Stethoscope,
+  Tag,
+  Thermometer,
+  TreePalm,
+  TriangleAlert,
+  UserPlus,
+  Wallet,
+  type LucideIcon,
+} from "lucide-react";
 import { useId, useRef, useState, type KeyboardEvent } from "react";
 
-type BenefitGroup = { heading?: string; items: string[] };
+type Benefit = { label: string; icon: LucideIcon };
+type BenefitGroup = { heading?: string; items: Benefit[]; verify?: string };
 type BenefitTab = { key: string; label: string; groups: BenefitGroup[]; pending?: string };
 
-// TODO(content) [VERIFY: HR] — every list below is interim until HR's benefits grid lands.
+// TODO(content) [VERIFY: HR] — every list below is interim until HR's benefits
+// grid lands. Groups with `verify` show a highlighted "Verify with HR" badge on
+// the page so they aren't missed before launch.
 const TABS: BenefitTab[] = [
   {
     key: "field",
@@ -13,28 +35,32 @@ const TABS: BenefitTab[] = [
     groups: [
       {
         heading: "Part time",
-        // Interim list from Heather's merchandising brief, to be replaced by HR's grid.
+        verify: "Interim list from Heather's merchandising brief, to be replaced by HR's grid",
         items: [
-          "Weekly pay and early wage access",
-          "W-2 employment",
-          "Paid mileage and travel pay where applicable*",
-          "Per diem and hotel for travel assignments",
-          "Limited benefit plans for everyday illness and accidents",
-          "Employee discounts",
-          "Referral bonus",
+          { label: "Weekly pay and early wage access", icon: Wallet },
+          { label: "W-2 employment", icon: BadgeCheck },
+          { label: "Paid mileage and travel pay where applicable*", icon: Car },
+          { label: "Per diem and hotel for travel assignments", icon: Hotel },
+          { label: "Limited benefit plans for everyday illness and accidents", icon: Stethoscope },
+          { label: "Employee discounts", icon: Tag },
+          { label: "Referral bonus", icon: UserPlus },
         ],
       },
       {
         heading: "Full time",
+        verify: "Pending HR confirmation",
         items: [
-          "Weekly pay and early wage access",
-          "Health and wellness plans",
-          "401(k) with employer match",
-          "Paid time off and holidays",
-          "Paid training, drive time and mileage between stores",
-          "Flexible spending accounts for parking, transit, dependent care and healthcare",
-          "Employee discounts",
-          "Referral bonus",
+          { label: "Weekly pay and early wage access", icon: Wallet },
+          { label: "Health and wellness plans", icon: HeartPulse },
+          { label: "401(k) with employer match", icon: PiggyBank },
+          { label: "Paid time off and holidays", icon: TreePalm },
+          { label: "Paid training, drive time and mileage between stores", icon: GraduationCap },
+          {
+            label: "Flexible spending accounts for parking, transit, dependent care and healthcare",
+            icon: Receipt,
+          },
+          { label: "Employee discounts", icon: Tag },
+          { label: "Referral bonus", icon: UserPlus },
         ],
       },
     ],
@@ -42,17 +68,17 @@ const TABS: BenefitTab[] = [
   {
     key: "corporate",
     label: "Corporate",
-    // From the current site; HR grid pending.
     groups: [
       {
+        verify: "From the current site; HR grid pending",
         items: [
-          "Health benefits",
-          "401(k)",
-          "Paid time off",
-          "Company-paid holidays",
-          "Sick time",
-          "Employee Assistance Program",
-          "Employee discounts",
+          { label: "Health benefits", icon: HeartPulse },
+          { label: "401(k)", icon: PiggyBank },
+          { label: "Paid time off", icon: TreePalm },
+          { label: "Company-paid holidays", icon: CalendarDays },
+          { label: "Sick time", icon: Thermometer },
+          { label: "Employee Assistance Program", icon: LifeBuoy },
+          { label: "Employee discounts", icon: Tag },
         ],
       },
     ],
@@ -66,13 +92,45 @@ const TABS: BenefitTab[] = [
   },
 ];
 
-// Always visible below the tabs. The bracketed ones are visible placeholders
-// until HR confirms the wording. TODO(content) [VERIFY: HR]
+// Always visible below the tabs. Bracketed text is a placeholder until HR
+// confirms the wording, and is highlighted on the page. TODO(content) [VERIFY: HR]
 const FOOTNOTES = [
   "*Mileage and travel pay apply to trips beyond a 30-mile commute each way to the store.",
   "Weekly pay eligibility: [VERIFY: HR]",
   "Sick time varies by state: [VERIFY: HR]",
 ];
+
+// Pre-launch reminder styling for anything still waiting on HR.
+const HIGHLIGHT = "rounded bg-amber-100 px-1.5 py-0.5 font-bold text-amber-900";
+
+function VerifyBadge({ note }: { note: string }) {
+  return (
+    <span
+      title={note}
+      className={`inline-flex items-center gap-1.5 text-xs uppercase tracking-[0.6px] ${HIGHLIGHT}`}
+    >
+      <TriangleAlert aria-hidden className="size-3.5" />
+      Verify with HR
+    </span>
+  );
+}
+
+// Wraps [bracketed] placeholders in a highlight so they stand out.
+function WithPlaceholders({ text }: { text: string }) {
+  return (
+    <>
+      {text.split(/(\[[^\]]+\])/).map((part, i) =>
+        part.startsWith("[") ? (
+          <mark key={i} className={HIGHLIGHT}>
+            {part}
+          </mark>
+        ) : (
+          part
+        )
+      )}
+    </>
+  );
+}
 
 export function Benefits() {
   const [active, setActive] = useState(0);
@@ -150,19 +208,26 @@ export function Benefits() {
               id={`${baseId}-panel`}
               aria-labelledby={`${baseId}-tab-${tab.key}`}
               tabIndex={0}
-              className="grid grid-cols-1 content-start md:min-h-[320px] gap-x-6 gap-y-10 outline-none md:grid-cols-2"
+              className="grid grid-cols-1 content-start md:min-h-[344px] gap-x-6 gap-y-10 outline-none md:grid-cols-2"
             >
-              {tab.pending && <p className="text-lg leading-7 text-middle-grey">{tab.pending}</p>}
+              {tab.pending && (
+                <p className="text-lg leading-7 text-middle-grey">
+                  <WithPlaceholders text={tab.pending} />
+                </p>
+              )}
               {tab.groups.map((group) => (
-                <div key={group.heading ?? tab.key} className="flex flex-col gap-4">
-                  {group.heading && <h3 className="header-6 text-black">{group.heading}</h3>}
-                  <ul className="flex flex-col gap-2 pl-5">
-                    {group.items.map((item) => (
-                      <li
-                        key={item}
-                        className="list-disc text-base leading-6 text-black marker:text-cerulean"
-                      >
-                        {item}
+                <div key={group.heading ?? tab.key} className="flex flex-col items-start gap-4">
+                  {(group.heading || group.verify) && (
+                    <div className="flex flex-wrap items-center gap-3">
+                      {group.heading && <h3 className="header-6 text-black">{group.heading}</h3>}
+                      {group.verify && <VerifyBadge note={group.verify} />}
+                    </div>
+                  )}
+                  <ul className="flex flex-col gap-3">
+                    {group.items.map(({ label, icon: Icon }) => (
+                      <li key={label} className="flex items-start gap-3 text-base leading-6 text-black">
+                        <Icon aria-hidden strokeWidth={1.75} className="mt-0.5 size-5 shrink-0 text-cerulean" />
+                        {label}
                       </li>
                     ))}
                   </ul>
@@ -173,7 +238,9 @@ export function Benefits() {
 
           <div className="flex flex-col gap-1 border-t border-middle-grey/30 pt-6 text-sm leading-6 text-middle-grey">
             {FOOTNOTES.map((note) => (
-              <p key={note}>{note}</p>
+              <p key={note}>
+                <WithPlaceholders text={note} />
+              </p>
             ))}
           </div>
         </div>
