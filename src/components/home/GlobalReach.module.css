@@ -1,0 +1,255 @@
+.reach {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 64px 64px 150px;
+  background: radial-gradient(120% 110% at 76% 46%, #0b1b26 0%, #0e181c 58%, #060d10 100%);
+  color: #fff;
+  overflow: hidden;
+  font-family: var(--font-sans), Arial, sans-serif;
+}
+
+/* scrim keeps the copy legible where the globe passes behind it */
+.reach::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    102deg,
+    #0b1b26 0%,
+    rgba(11, 27, 38, 0.93) 24%,
+    rgba(11, 27, 38, 0.55) 44%,
+    rgba(11, 27, 38, 0) 62%
+  );
+}
+
+.grid {
+  position: relative;
+  z-index: 2;
+  margin: 0 auto;
+  max-width: 1560px;
+  width: 100%;
+  pointer-events: none; /* the globe layer below must stay draggable */
+}
+
+.copy {
+  max-width: 660px;
+  pointer-events: auto;
+}
+
+.reach.isExpanded .copy {
+  padding-bottom: 30px;
+}
+
+.reach.isExpanded .roster {
+  margin-top: 28px;
+}
+
+.head {
+  font-family: var(--font-heading), Arial, sans-serif;
+  font-weight: 300;
+  font-style: normal;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  font-size: clamp(30px, min(3.6vw, 6.4vh), 62px);
+  line-height: 1.14;
+  margin: 0 0 clamp(18px, 3vh, 32px);
+  text-wrap: pretty;
+}
+
+.head em {
+  font-family: var(--font-display), Georgia, serif;
+  font-style: italic;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  color: var(--color-cerulean);
+  text-transform: none;
+  font-size: 1.12em;
+}
+
+.sub {
+  font-family: var(--font-sans), Arial, sans-serif;
+  font-weight: 400;
+  font-size: clamp(15px, 1.2vw, 19px);
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  color: rgba(255, 255, 255, 0.86);
+  max-width: 620px;
+  margin: 0 0 clamp(16px, 2.6vh, 30px);
+}
+
+.rosterToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  font-family: var(--font-sans), Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #3aa0d8;
+  border-bottom: 1px solid rgba(58, 160, 216, 0.5);
+  line-height: 2;
+  transition:
+    color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.rosterToggle:hover {
+  color: #fff;
+  border-color: #fff;
+}
+
+.rosterToggle span {
+  display: inline-block;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.rosterToggle[aria-expanded="true"] span {
+  transform: rotate(180deg);
+}
+
+.roster {
+  columns: 3 150px;
+  column-gap: 28px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-width: 660px;
+}
+
+.foot {
+  position: absolute;
+  z-index: 3;
+  left: 64px;
+  right: 64px;
+  bottom: 56px;
+  pointer-events: auto;
+}
+
+.foot > div {
+  max-width: 1560px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.rosterItem {
+  font-size: 15px;
+  line-height: 1.85;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.rosterItem.isCp {
+  color: #fff;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 28px;
+}
+
+.legend span {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.legend i {
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+
+/* Cropped bottom-right, as in the reference frame */
+.globe {
+  position: absolute;
+  z-index: 0;
+  right: -9%;
+  bottom: -34%;
+  width: clamp(700px, 74vw, 1500px);
+  aspect-ratio: 1 / 1;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.globe svg text {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.globe.isDragging {
+  cursor: grabbing;
+}
+
+.globe svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.globeHint {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 30px;
+  font-size: 13px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.88);
+  white-space: nowrap;
+  transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.globeHint::before {
+  content: "";
+  width: 26px;
+  height: 1px;
+  background: var(--color-cerulean);
+  display: block;
+}
+
+.reach.isTouched .globeHint {
+  opacity: 0;
+}
+
+@media (max-width: 980px) {
+  .copy {
+    max-width: 520px;
+  }
+}
+
+@media (max-width: 720px) {
+  .reach {
+    padding: 48px 24px 150px;
+  }
+  .foot {
+    left: 24px;
+    right: 24px;
+    bottom: 32px;
+    gap: 20px;
+  }
+  .globe {
+    right: -20%;
+    bottom: -18%;
+    width: min(680px, 112%);
+  }
+}

@@ -1,0 +1,213 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #111111;
+
+  /* Brand colors — CP Brand Library */
+  --color-cerulean: #0275b3;
+  --color-cerulean-dark: #055e8d;
+  --color-medium-blue: #186188;
+  --color-dark-blue: #173542;
+  --color-near-black: #121e23;
+  --color-middle-grey: #666666;
+  --color-light-grey: #eaeaea;
+  --color-placeholder-grey: #d9d9d9;
+  --color-accent-green: #02b391;
+
+  /* Spacing scale — CP Brand Library */
+  --spacing-8: 8px;
+  --spacing-12: 12px;
+  --spacing-16: 16px;
+  --spacing-24: 24px;
+  --spacing-32: 32px;
+  --spacing-48: 48px;
+  --spacing-88: 88px;
+  --spacing-110: 110px;
+
+  /* Grid / container system */
+  --grid-max-width: 1680px;
+  --grid-columns: 12;
+  --grid-gutter: 24px; /* use as gap-6 for any 12-col grid layout */
+  --grid-margin: 32px; /* mobile side margin */
+  --grid-margin-md: 120px; /* desktop side margin → 1440px content width */
+
+  /* Header heights — SSR fallback only, corrected client-side by
+     ResizeObserver in HeaderSpacer once the real bar is measured. */
+  --gateway-header-height: 62px;
+  --pillar-header-height: 94px;
+
+  /* Brand typefaces served via Adobe Fonts (Typekit) — see kit link in root layout */
+  --font-heading: "normalidad-wide", "Arial Narrow", Arial, sans-serif;
+  --font-display: "superior-title", Georgia, "Times New Roman", serif;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-cerulean: var(--color-cerulean);
+  --color-cerulean-dark: var(--color-cerulean-dark);
+  --color-medium-blue: var(--color-medium-blue);
+  --color-dark-blue: var(--color-dark-blue);
+  --color-near-black: var(--color-near-black);
+  --color-middle-grey: var(--color-middle-grey);
+  --color-light-grey: var(--color-light-grey);
+  --color-placeholder-grey: var(--color-placeholder-grey);
+  --color-accent-green: var(--color-accent-green);
+  --font-sans: var(--font-open-sans);
+  --font-heading: var(--font-heading);
+  --font-display: var(--font-display);
+  --max-width-grid: var(--grid-max-width);
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Type scale — Figma design system */
+.header-1 {
+  font-family: var(--font-heading), sans-serif;
+  font-size: 54px;
+  font-weight: 600;
+  line-height: 60px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.header-2 {
+  font-family: var(--font-heading), sans-serif;
+  font-size: 42px;
+  font-weight: 600;
+  line-height: 50px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.header-3 {
+  font-family: var(--font-heading), sans-serif;
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 36px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.header-4 {
+  font-family: var(--font-heading), sans-serif;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 34px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.header-5 {
+  font-family: var(--font-heading), sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 24px;
+  letter-spacing: 0.225em;
+  text-transform: uppercase;
+}
+.header-6 {
+  font-family: var(--font-heading), sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 24px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+html {
+  scrollbar-gutter: stable;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+@keyframes logo-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-logo-scroll {
+  animation: logo-scroll 60s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-logo-scroll {
+    animation: none;
+  }
+}
+
+.fade-in-section {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.fade-in-section.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-in-section {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+@keyframes content-fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.content-fade-in {
+  animation: content-fade-in-up 0.6s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .content-fade-in {
+    animation: none;
+  }
+}
+
+@keyframes scroll-bounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(10px);
+  }
+  60% {
+    transform: translateY(5px);
+  }
+}
+
+.animate-scroll-bounce {
+  animation: scroll-bounce 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-scroll-bounce {
+    animation: none;
+  }
+}
