@@ -1,23 +1,13 @@
 "use client";
 
-import { useEffect } from "react";
+import { useId } from "react";
+import { CloseButton } from "@/components/ui/CloseButton";
+import { useDialog } from "@/components/ui/useDialog";
 import { StartProjectForm } from "./StartProjectForm";
 
 export function StartProjectModal({ open, onClose }: { open: boolean; onClose: () => void }) {
-  useEffect(() => {
-    if (!open) return;
-
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", onKeyDown);
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      document.removeEventListener("keydown", onKeyDown);
-      document.body.style.overflow = "";
-    };
-  }, [open, onClose]);
+  const panelRef = useDialog<HTMLDivElement>(open, onClose);
+  const headingId = useId();
 
   if (!open) return null;
 
@@ -27,10 +17,18 @@ export function StartProjectModal({ open, onClose }: { open: boolean; onClose: (
       onClick={onClose}
     >
       <div
-        className="max-h-[90vh] w-full max-w-[912px] overflow-y-auto rounded-lg border border-light-grey bg-[#fafafa] p-8 md:p-16"
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={headingId}
+        tabIndex={-1}
+        className="relative max-h-[90vh] w-full max-w-[912px] overflow-y-auto rounded-lg border border-light-grey bg-[#fafafa] p-8 outline-none md:p-16"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="header-3 text-black">start your project today</h2>
+        <CloseButton onClick={onClose} className="absolute right-3 top-3" />
+        <h2 id={headingId} className="header-3 pr-10 text-black">
+          start your project today
+        </h2>
         <div className="mt-8">
           <StartProjectForm />
         </div>

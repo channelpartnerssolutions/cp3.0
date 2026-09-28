@@ -1,24 +1,14 @@
 "use client";
 
-import { useEffect } from "react";
+import { useId } from "react";
 import Image from "next/image";
+import { CloseButton } from "@/components/ui/CloseButton";
+import { useDialog } from "@/components/ui/useDialog";
 import type { Leader } from "./leaders";
 
 export function LeaderModal({ leader, onClose }: { leader: Leader | null; onClose: () => void }) {
-  useEffect(() => {
-    if (!leader) return;
-
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", onKeyDown);
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      document.removeEventListener("keydown", onKeyDown);
-      document.body.style.overflow = "";
-    };
-  }, [leader, onClose]);
+  const panelRef = useDialog<HTMLDivElement>(leader !== null, onClose);
+  const headingId = useId();
 
   if (!leader) return null;
 
@@ -30,12 +20,20 @@ export function LeaderModal({ leader, onClose }: { leader: Leader | null; onClos
       onClick={onClose}
     >
       <div
-        className="relative flex w-full max-w-[910px] gap-8 rounded-lg bg-white p-8 max-md:flex-col"
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={headingId}
+        tabIndex={-1}
+        className="relative flex max-h-[90vh] w-full max-w-[910px] gap-8 overflow-y-auto rounded-lg bg-white p-8 outline-none max-md:flex-col"
         onClick={(e) => e.stopPropagation()}
       >
+        <CloseButton onClick={onClose} className="absolute right-3 top-3 z-10 bg-white/80" />
         <div className="flex flex-1 flex-col text-black">
           <div>
-            <p className="header-4">{leader.name}</p>
+            <h2 id={headingId} className="header-4 pr-10">
+              {leader.name}
+            </h2>
             <p className="mt-0.5 text-base leading-[1.46]">{leader.title}</p>
           </div>
           <p className="mt-6 text-base leading-6">{leader.bio}</p>
