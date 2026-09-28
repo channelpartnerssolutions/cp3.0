@@ -25,7 +25,7 @@ function LocationItem({ location }: { location: (typeof OFFICE_LOCATIONS)[number
 
 export function ContactLocations() {
   return (
-    <section className="relative w-full border-b border-light-grey bg-[#fafafa] pt-48 pb-24">
+    <section className="relative w-full border-b border-light-grey bg-[#fafafa] py-24">
       <Container className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12 grid grid-cols-1 gap-x-4 gap-y-12 sm:grid-cols-2 lg:col-span-10 lg:col-start-2">
           {OFFICE_LOCATIONS.map((location) => (

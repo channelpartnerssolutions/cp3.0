@@ -1,18 +1,14 @@
-"use client";
-
-import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Container } from "@/components/ui/Container";
-import { StartProjectModal } from "./StartProjectModal";
+import { StartProjectForm } from "./StartProjectForm";
 
 export function ContactHero() {
-  const [showForm, setShowForm] = useState(false);
-
   return (
     <section className="relative w-full bg-white">
       <Container className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12 grid grid-cols-1 gap-x-6 gap-y-10 pt-[100px] pb-20 lg:col-span-10 lg:col-start-2 lg:grid-cols-12">
-          <div className="flex flex-col items-start gap-20 lg:col-span-7">
+          <div className="flex flex-col items-start gap-12 lg:col-span-7">
             <div className="flex flex-col items-start gap-4">
               <h1 className="header-1 text-black">let&rsquo;s talk</h1>
               <p className="max-w-[512px] text-2xl leading-8 text-black">
@@ -20,30 +16,21 @@ export function ContactHero() {
                 you&rsquo;re in the right place.
               </p>
             </div>
-            <div className="flex items-start gap-20">
-              <div className="flex flex-col items-start gap-2">
-                <p className="text-base text-middle-grey">Become a Client</p>
-                <button
-                  type="button"
-                  onClick={() => setShowForm(true)}
-                  className="cursor-pointer text-2xl leading-8 text-black underline underline-offset-4 hover:text-cerulean"
-                >
-                  Start Your Project
-                </button>
-              </div>
-              <div className="flex flex-col items-start gap-2">
-                <p className="text-base text-middle-grey">Join Us</p>
-                <a
-                  href="/careers"
-                  className="text-2xl leading-8 text-black underline underline-offset-4 hover:text-cerulean"
-                >
-                  See Open Positions
-                </a>
-              </div>
+            <div className="w-full">
+              <StartProjectForm />
+            </div>
+            <div className="flex flex-col items-start gap-2">
+              <p className="text-base text-middle-grey">Join Us</p>
+              <Link
+                href="/careers"
+                className="text-2xl leading-8 text-black underline underline-offset-4 hover:text-cerulean"
+              >
+                See Open Positions
+              </Link>
             </div>
           </div>
           <div className="relative z-10 lg:col-span-5">
-            <div className="relative -mb-32 aspect-[557/646] w-full overflow-hidden rounded-lg">
+            <div className="relative aspect-[557/646] w-full overflow-hidden rounded-lg">
               <Image
                 src="/images/contact/office.jpg"
                 alt="Channel Partners headquarters sign and building"
@@ -72,7 +59,6 @@ export function ContactHero() {
           </div>
         </div>
       </Container>
-      <StartProjectModal open={showForm} onClose={() => setShowForm(false)} />
     </section>
   );
 }
