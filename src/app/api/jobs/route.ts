@@ -35,6 +35,12 @@ function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+// zippopotam.us covers Canada by forward sortation area (first 3 characters).
+function geocodePath(zip: string): string {
+  const canadian = zip.match(/^([A-Z]\d[A-Z])\s?\d[A-Z]\d$/i);
+  return canadian ? `ca/${canadian[1].toUpperCase()}` : `us/${encodeURIComponent(zip)}`;
+}
+
 async function geocodeZip(zip: string): Promise<{ lat: number; lng: number } | null> {
   if (!zip) return null;
   if (geocodeCache.has(zip)) return geocodeCache.get(zip) ?? null;
@@ -43,7 +49,7 @@ async function geocodeZip(zip: string): Promise<{ lat: number; lng: number } | n
   await sleep(100);
 
   try {
-    const res = await fetch(`https://api.zippopotam.us/us/${encodeURIComponent(zip)}`);
+    const res = await fetch(`https://api.zippopotam.us/${geocodePath(zip)}`);
     if (!res.ok) {
       // Only a 404 means the ZIP is unknown; don't let a transient error stick.
       if (res.status === 404) geocodeCache.set(zip, null);
