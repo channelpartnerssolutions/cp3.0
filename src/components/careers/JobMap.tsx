@@ -5,7 +5,7 @@ import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { Map as LeafletMap, LayerGroup, Marker, Path } from "leaflet";
+import type { CircleMarker, Map as LeafletMap, LayerGroup, Marker, Path } from "leaflet";
 import { Container } from "@/components/ui/Container";
 import {
   CATEGORIES,
@@ -33,6 +33,9 @@ const NORTH_AMERICA_BOUNDS: [[number, number], [number, number]] = [
 // IP-based geolocation error; if nothing falls within it, recentering would
 // just make the map look empty, so the North America view is kept instead.
 const NEARBY_JOB_RADIUS_MILES = 75;
+
+// Sentinel value for the "Use Current Location" option in the location dropdown.
+const CURRENT_LOCATION = "__current__";
 
 function haversineMiles(a: [number, number], b: [number, number]): number {
   const R = 3958.8;
@@ -89,6 +92,7 @@ export function JobMap() {
   const applyFramingRef = useRef<(() => void) | null>(null);
   const framingAppliedRef = useRef(false);
   const geoCatchUpDoneRef = useRef(false);
+  const userMarkerRef = useRef<CircleMarker | null>(null);
 
   const [jobs, setJobs] = useState<Job[]>([]);
   const [mapReady, setMapReady] = useState(false);
@@ -97,6 +101,8 @@ export function JobMap() {
   const [positionType, setPositionType] = useState("");
   const [stateFilter, setStateFilter] = useState("");
   const [visibleJobs, setVisibleJobs] = useState<Job[]>([]);
+  const [useCurrentLocation, setUseCurrentLocation] = useState(false);
+  const [geoMessage, setGeoMessage] = useState("");
 
   useEffect(() => {
     fetch("/api/jobs")
@@ -202,7 +208,9 @@ export function JobMap() {
             layer.on("mouseout", () => (layer as Path).setStyle({ fillOpacity: 0.04 }));
             layer.on("click", () => {
               const abbr = name ? US_STATE_ABBR[name] : undefined;
-              if (abbr) setStateFilter((current) => (current === abbr ? "" : abbr));
+              if (!abbr) return;
+              setUseCurrentLocation(false);
+              setStateFilter((current) => (current === abbr ? "" : abbr));
             });
           },
         }).addTo(map);
@@ -251,10 +259,14 @@ export function JobMap() {
       resizeObserver.observe(container);
       resizeObserverRef.current = resizeObserver;
 
-      // Best-effort: recenter on the visitor's location once permission resolves.
-      // Silently keeps the North America framing on denial, timeout, or an
-      // unsupported browser — this is a nice-to-have, not a requirement.
-      if (typeof navigator !== "undefined" && navigator.geolocation) {
+      // Best-effort: recenter on the visitor's location, but only if they've
+      // already granted permission — the prompt itself is reserved for the
+      // "Use Current Location" option. Silently keeps the North America framing
+      // otherwise.
+      const geoPermission = await navigator.permissions
+        ?.query({ name: "geolocation" })
+        .catch(() => null);
+      if (!cancelled && geoPermission?.state === "granted" && navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
             if (cancelled || hasActiveFilterRef.current) return;
@@ -443,7 +455,82 @@ export function JobMap() {
     </div>
   );
 
+  const showUserLocation = async (here: [number, number]) => {
+    const L = (await import("leaflet")).default;
+    const map = mapRef.current;
+    if (!map) return;
+
+    userMarkerRef.current?.remove();
+    userMarkerRef.current = L.circleMarker(here, {
+      radius: 8,
+      color: "#fff",
+      weight: 2,
+      fillColor: "#02b391",
+      fillOpacity: 1,
+    })
+      .bindTooltip("Your location")
+      .addTo(map);
+
+    const nearby = jobsRef.current.filter(
+      (job) =>
+        job.lat != null &&
+        job.lng != null &&
+        haversineMiles(here, [job.lat, job.lng]) <= NEARBY_JOB_RADIUS_MILES
+    );
+    if (nearby.length > 0) {
+      const points: [number, number][] = [
+        here,
+        ...nearby.map((job) => [job.lat as number, job.lng as number] as [number, number]),
+      ];
+      map.fitBounds(L.latLngBounds(points), { padding: [40, 40], maxZoom: 10 });
+    } else {
+      map.setView(here, 8);
+      setGeoMessage(`No open positions within ${NEARBY_JOB_RADIUS_MILES} miles — try zooming out.`);
+    }
+  };
+
+  // Triggers the browser's location permission prompt on first use.
+  const locateUser = () => {
+    if (!navigator.geolocation) {
+      setUseCurrentLocation(false);
+      setGeoMessage("Your browser doesn't support location lookup.");
+      return;
+    }
+    setGeoMessage("Finding your location…");
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const here: [number, number] = [position.coords.latitude, position.coords.longitude];
+        userLocationRef.current = here;
+        setGeoMessage("");
+        void showUserLocation(here);
+      },
+      (error) => {
+        setUseCurrentLocation(false);
+        setGeoMessage(
+          error.code === error.PERMISSION_DENIED
+            ? "Location access is blocked. Allow it in your browser settings to use this option."
+            : "We couldn't find your location. Try again or choose a state."
+        );
+      },
+      { timeout: 10000, maximumAge: 300000 }
+    );
+  };
+
+  const handleLocationChange = (value: string) => {
+    if (value === CURRENT_LOCATION) {
+      setStateFilter("");
+      setUseCurrentLocation(true);
+      locateUser();
+      return;
+    }
+    setUseCurrentLocation(false);
+    setGeoMessage("");
+    setStateFilter(value);
+  };
+
   const resetFilters = () => {
+    setUseCurrentLocation(false);
+    setGeoMessage("");
     setKeyword("");
     setCategory("");
     setPositionType("");
@@ -509,18 +596,24 @@ export function JobMap() {
             </div>
 
             <select
-              value={stateFilter}
-              onChange={(event) => setStateFilter(event.target.value)}
+              value={useCurrentLocation ? CURRENT_LOCATION : stateFilter}
+              onChange={(event) => handleLocationChange(event.target.value)}
               aria-label="Filter by location"
               className="w-full rounded border border-light-grey px-2 py-2 text-sm text-black"
             >
               <option value="">Location</option>
+              <option value={CURRENT_LOCATION}>Use Current Location</option>
               {availableStates.map((state) => (
                 <option key={state} value={state}>
                   {state}
                 </option>
               ))}
             </select>
+            {geoMessage && (
+              <p role="status" className="-mt-2 text-xs text-middle-grey">
+                {geoMessage}
+              </p>
+            )}
 
             <p className="text-xs uppercase tracking-[0.6px] text-middle-grey">
               Showing {visibleJobs.length + unmappedJobs.length} of {filteredJobs.length} position
