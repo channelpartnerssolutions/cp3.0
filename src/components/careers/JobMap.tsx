@@ -259,14 +259,10 @@ export function JobMap() {
       resizeObserver.observe(container);
       resizeObserverRef.current = resizeObserver;
 
-      // Best-effort: recenter on the visitor's location, but only if they've
-      // already granted permission — the prompt itself is reserved for the
-      // "Use Current Location" option. Silently keeps the North America framing
-      // otherwise.
-      const geoPermission = await navigator.permissions
-        ?.query({ name: "geolocation" })
-        .catch(() => null);
-      if (!cancelled && geoPermission?.state === "granted" && navigator.geolocation) {
+      // Best-effort: recenter on the visitor's location once permission resolves.
+      // Silently keeps the North America framing on denial, timeout, or an
+      // unsupported browser — this is a nice-to-have, not a requirement.
+      if (typeof navigator !== "undefined" && navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
             if (cancelled || hasActiveFilterRef.current) return;
