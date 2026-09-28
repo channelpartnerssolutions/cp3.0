@@ -198,7 +198,9 @@ export function SolutionsCarousel() {
 
   return (
     <section className="relative w-full overflow-hidden bg-white py-20">
-      <div className="relative mx-auto flex max-w-[1440px] items-center px-[70px]">
+      {/* Same 12-column grid as the rest of the site: image cols 2–5, text cols 7–11,
+          so the block is centered with one empty column at each side. Stacked below xl. */}
+      <div className="relative mx-auto grid w-full max-w-[var(--grid-max-width)] grid-cols-12 items-start gap-x-6 gap-y-12 px-[var(--grid-margin)] md:px-[var(--grid-margin-md)]">
         <button
           type="button"
           aria-label="Previous solution"
@@ -214,75 +216,73 @@ export function SolutionsCarousel() {
           />
         </button>
 
-        <div className="flex w-full flex-col items-center gap-12 lg:flex-row lg:items-start lg:gap-20">
-          <div className="relative w-full max-w-[460px] shrink-0">
-            <div className="absolute -left-6 -top-6 h-full w-full rounded bg-cerulean" aria-hidden />
-            <div className="relative aspect-[558/685] w-full overflow-hidden rounded">
-              <Image
-                src={solution.image}
-                alt={`${solution.title} at Channel Partners`}
-                fill
-                unoptimized
-                className="object-cover"
-              />
-            </div>
+        <div className="relative col-span-12 mx-auto w-full max-w-[460px] xl:col-span-4 xl:col-start-2 xl:max-w-none">
+          <div className="absolute -left-6 -top-6 h-full w-full rounded bg-cerulean" aria-hidden />
+          <div className="relative aspect-[558/685] w-full overflow-hidden rounded">
+            <Image
+              src={solution.image}
+              alt={`${solution.title} at Channel Partners`}
+              fill
+              unoptimized
+              className="object-cover"
+            />
+          </div>
+        </div>
+
+        <div className="col-span-12 mx-auto flex w-full max-w-[571px] flex-col items-start gap-6 xl:col-span-5 xl:col-start-7 xl:max-w-none">
+          <div className="flex w-full flex-wrap items-center justify-between gap-x-2 gap-y-3">
+            {ICON_ORDER.map((num) => {
+              const size = ICON_SIZE[num];
+              const isActive = num === solution.iconNumber;
+              const target = SOLUTIONS.find((s) => s.iconNumber === num);
+              if (!target) return null;
+              return (
+                <button
+                  key={num}
+                  type="button"
+                  aria-label={target.title}
+                  onClick={() => setIndex(SOLUTIONS.indexOf(target))}
+                  className="group relative cursor-pointer"
+                >
+                  <span className="pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded bg-near-black px-2 py-1 text-xs text-white opacity-0 transition-opacity duration-150 group-hover:opacity-100">
+                    {target.title}
+                  </span>
+                  <Image
+                    src={`${ICON_DIR}/cu-icon-${isActive ? "g" : "n"}${num}.svg`}
+                    alt=""
+                    width={size.width}
+                    height={size.height}
+                    unoptimized
+                  />
+                </button>
+              );
+            })}
           </div>
 
-          <div className="flex w-full max-w-[571px] flex-col items-start gap-6">
-            <div className="flex items-center gap-6">
-              {ICON_ORDER.map((num) => {
-                const size = ICON_SIZE[num];
-                const isActive = num === solution.iconNumber;
-                const target = SOLUTIONS.find((s) => s.iconNumber === num);
-                if (!target) return null;
-                return (
-                  <button
-                    key={num}
-                    type="button"
-                    aria-label={target.title}
-                    onClick={() => setIndex(SOLUTIONS.indexOf(target))}
-                    className="group relative cursor-pointer"
-                  >
-                    <span className="pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded bg-near-black px-2 py-1 text-xs text-white opacity-0 transition-opacity duration-150 group-hover:opacity-100">
-                      {target.title}
-                    </span>
-                    <Image
-                      src={`${ICON_DIR}/cu-icon-${isActive ? "g" : "n"}${num}.svg`}
-                      alt=""
-                      width={size.width}
-                      height={size.height}
-                      unoptimized
-                    />
-                  </button>
-                );
-              })}
-            </div>
+          <h2 className="header-2 text-black">{solution.title}</h2>
 
-            <h2 className="header-2 text-black">{solution.title}</h2>
+          <p className="text-lg leading-7 text-black">{solution.description}</p>
 
-            <p className="text-lg leading-7 text-black">{solution.description}</p>
-
-            <div className="flex flex-col items-start gap-3">
-              <h5 className="header-6 text-black">Perfect for people who:</h5>
-              <ul className="flex flex-col gap-1 pl-5">
-                {solution.bullets.map((bullet) => (
-                  <li
-                    key={bullet}
-                    className="list-disc text-lg leading-7 text-black marker:text-cerulean"
-                  >
-                    {bullet}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <Button
-              href={`${ICIMS_BASE}&searchCategory=${solution.categoryId}`}
-              variant="primary"
-            >
-              {solution.ctaLabel}
-            </Button>
+          <div className="flex flex-col items-start gap-3">
+            <h5 className="header-6 text-black">Perfect for people who:</h5>
+            <ul className="flex flex-col gap-1 pl-5">
+              {solution.bullets.map((bullet) => (
+                <li
+                  key={bullet}
+                  className="list-disc text-lg leading-7 text-black marker:text-cerulean"
+                >
+                  {bullet}
+                </li>
+              ))}
+            </ul>
           </div>
+
+          <Button
+            href={`${ICIMS_BASE}&searchCategory=${solution.categoryId}`}
+            variant="primary"
+          >
+            {solution.ctaLabel}
+          </Button>
         </div>
 
         <button
