@@ -101,6 +101,7 @@ export function JobMap() {
   const clusterGroupsRef = useRef<Record<string, LayerGroup>>({});
   const markersByReqIdRef = useRef<Record<string, Marker>>({});
   const jobsRef = useRef<Job[]>([]);
+  const jobsLoadedRef = useRef(false);
   const applyFramingRef = useRef<(() => void) | null>(null);
   const framingAppliedRef = useRef(false);
   const geoCatchUpDoneRef = useRef(false);
@@ -119,7 +120,8 @@ export function JobMap() {
 
   useEffect(() => {
     jobsRef.current = jobs;
-  }, [jobs]);
+    jobsLoadedRef.current = loadedJobs !== null;
+  }, [jobs, loadedJobs]);
 
   // If geolocation resolved before the jobs fetch finished, re-run the
   // initial framing once jobs arrive so a nearby-jobs recenter isn't missed.
@@ -163,6 +165,29 @@ export function JobMap() {
     if (!mapContainerRef.current || mapRef.current) return;
     let cancelled = false;
 
+    // Kick off the slow, independent work right away rather than after the map
+    // is built: the location lookup (browser prompt + Wi-Fi lookup) and the
+    // state outlines download both run in parallel with loading Leaflet.
+    // Best-effort: silently keeps the North America framing on denial, timeout,
+    // or an unsupported browser — this is a nice-to-have, not a requirement.
+    if (typeof navigator !== "undefined" && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          if (cancelled || hasActiveFilterRef.current) return;
+          userLocationRef.current = [position.coords.latitude, position.coords.longitude];
+          // If the map isn't built yet, its first framing pass picks this up.
+          applyFramingRef.current?.();
+        },
+        () => {
+          // Denied, timed out, or unavailable — leave the default North America view.
+        },
+        { timeout: 8000, maximumAge: 300000 }
+      );
+    }
+    const statesGeoPromise = fetch("/data/us-states.json")
+      .then((res) => res.json())
+      .catch(() => null);
+
     (async () => {
       const L = (await import("leaflet")).default;
       await import("leaflet.markercluster");
@@ -202,9 +227,10 @@ export function JobMap() {
         { passive: true }
       );
 
-      try {
-        const statesRes = await fetch("/data/us-states.json");
-        const statesGeo = await statesRes.json();
+      // State outlines are a visual enhancement only — added whenever they
+      // arrive, without holding up the rest of the setup; skipped if the fetch fails.
+      statesGeoPromise.then((statesGeo) => {
+        if (cancelled || !statesGeo) return;
         L.geoJSON(statesGeo, {
           style: { color: "#0275b3", weight: 1, fillOpacity: 0.04 },
           onEachFeature: (feature, layer) => {
@@ -220,9 +246,7 @@ export function JobMap() {
             });
           },
         }).addTo(map);
-      } catch {
-        // State outlines are a visual enhancement only — skip silently if the fetch fails.
-      }
+      });
 
       mapRef.current = map;
 
@@ -244,7 +268,11 @@ export function JobMap() {
                 haversineMiles(userLocationRef.current as [number, number], [job.lat, job.lng]) <=
                   NEARBY_JOB_RADIUS_MILES
             );
-            if (nearby.length > 0) {
+            if (!jobsLoadedRef.current) {
+              // Jobs are still loading: show the visitor's area now; the
+              // catch-up effect tightens the view around nearby jobs later.
+              map.setView(userLocationRef.current, 8);
+            } else if (nearby.length > 0) {
               const points: [number, number][] = [
                 userLocationRef.current,
                 ...nearby.map((job) => [job.lat as number, job.lng as number] as [number, number]),
@@ -264,23 +292,6 @@ export function JobMap() {
       const resizeObserver = new ResizeObserver(applyFraming);
       resizeObserver.observe(container);
       resizeObserverRef.current = resizeObserver;
-
-      // Best-effort: recenter on the visitor's location once permission resolves.
-      // Silently keeps the North America framing on denial, timeout, or an
-      // unsupported browser — this is a nice-to-have, not a requirement.
-      if (typeof navigator !== "undefined" && navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            if (cancelled || hasActiveFilterRef.current) return;
-            userLocationRef.current = [position.coords.latitude, position.coords.longitude];
-            applyFraming();
-          },
-          () => {
-            // Denied, timed out, or unavailable — leave the default North America view.
-          },
-          { timeout: 8000, maximumAge: 300000 }
-        );
-      }
 
       setMapReady(true);
     })();
