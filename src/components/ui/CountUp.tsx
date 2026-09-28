@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useInView } from "@/components/ui/useInView";
 
 type CountUpProps = {
@@ -13,41 +13,56 @@ function easeOutExpo(t: number) {
   return t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
 }
 
+function prefersReducedMotion() {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+// The server HTML always carries the final value, so crawlers, link previews and
+// screenshots never see "000". The count-up is a client-only visual layer: the
+// digits are zeroed while offscreen and animated once scrolled into view.
 export function CountUp({ value, duration = 1500, className }: CountUpProps) {
   const { ref, inView } = useInView<HTMLSpanElement>();
-  const [display, setDisplay] = useState(value.replace(/\d/g, "0"));
-  const hasAnimated = useRef(false);
-
-  const match = value.match(/\d+/);
-  const target = match ? parseInt(match[0], 10) : null;
+  const digitsRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    if (!inView || target === null || hasAnimated.current) return;
-    hasAnimated.current = true;
+    const textNode = digitsRef.current?.firstChild;
+    const match = value.match(/\d+/);
+    if (!textNode || !match || prefersReducedMotion()) return;
 
-    const currentMatch = value.match(/\d+/)!;
-    const digits = currentMatch[0].length;
-    const prefix = value.slice(0, currentMatch.index);
-    const suffix = value.slice(currentMatch.index! + currentMatch[0].length);
+    if (!inView) {
+      textNode.nodeValue = value.replace(/\d/g, "0");
+      return;
+    }
+
+    const target = parseInt(match[0], 10);
+    const digits = match[0].length;
+    const prefix = value.slice(0, match.index);
+    const suffix = value.slice(match.index! + digits);
     const start = performance.now();
 
     let frame: number;
     const tick = (now: number) => {
       const progress = Math.min((now - start) / duration, 1);
       const current = Math.round(easeOutExpo(progress) * target);
-      setDisplay(`${prefix}${String(current).padStart(digits, "0")}${suffix}`);
+      textNode.nodeValue = `${prefix}${String(current).padStart(digits, "0")}${suffix}`;
       if (progress < 1) {
         frame = requestAnimationFrame(tick);
       }
     };
     frame = requestAnimationFrame(tick);
 
-    return () => cancelAnimationFrame(frame);
-  }, [inView, target, duration, value]);
+    return () => {
+      cancelAnimationFrame(frame);
+      textNode.nodeValue = value;
+    };
+  }, [inView, duration, value]);
 
   return (
     <span ref={ref} className={className}>
-      {target === null ? value : display}
+      <span className="sr-only">{value}</span>
+      <span key={value} ref={digitsRef} aria-hidden="true">
+        {value}
+      </span>
     </span>
   );
 }
