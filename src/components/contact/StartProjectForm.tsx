@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { submitContactForm } from "@/lib/hubspot";
 import { isBusinessEmail } from "@/lib/business-email";
 import { getRecaptchaToken } from "@/lib/recaptcha";
@@ -71,17 +71,78 @@ type FieldErrors = {
   website?: string;
 };
 
+function validateContactFields(formData: FormData): FieldErrors {
+  const firstname = String(formData.get("firstname") || "").trim();
+  const lastname = String(formData.get("lastname") || "").trim();
+  const email = String(formData.get("email") || "").trim();
+  const website = String(formData.get("website") || "").trim();
+
+  const errors: FieldErrors = {};
+  if (!firstname) errors.firstname = "First name is required.";
+  if (!lastname) errors.lastname = "Last name is required.";
+  if (!email) {
+    errors.email = "Business email is required.";
+  } else if (!EMAIL_PATTERN.test(email)) {
+    errors.email = "Please enter a valid email address.";
+  } else if (!isBusinessEmail(email)) {
+    errors.email = BUSINESS_EMAIL_ERROR;
+  }
+  if (website && !isValidWebsite(website)) {
+    errors.website = "Please enter a valid website address.";
+  }
+  return errors;
+}
+
+// The form is shown one step at a time, but every field stays inside the one
+// <form> (inactive steps are just hidden), so submission gathers all of them
+// exactly as before.
+const STEPS = ["What you need", "Your details", "Anything else"] as const;
+const CONTACT_STEP = 1;
+const LAST_STEP = STEPS.length - 1;
+
 export function StartProjectForm() {
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+  const [step, setStep] = useState(0);
+  const formRef = useRef<HTMLFormElement>(null);
+  const stepRefs = useRef<(HTMLFieldSetElement | null)[]>([]);
+  const movedRef = useRef(false);
+
+  // After moving between steps (not on first render), put focus on the new
+  // step's first field so keyboard and screen-reader users land in place.
+  useEffect(() => {
+    if (!movedRef.current) return;
+    stepRefs.current[step]?.querySelector<HTMLElement>("input, select, textarea")?.focus();
+  }, [step]);
 
   function clearFieldError(field: keyof FieldErrors) {
     setFieldErrors((prev) => (prev[field] ? { ...prev, [field]: undefined } : prev));
   }
 
+  function goToStep(next: number) {
+    movedRef.current = true;
+    setStep(next);
+  }
+
+  function goNext() {
+    if (step === CONTACT_STEP && formRef.current) {
+      const nextFieldErrors = validateContactFields(new FormData(formRef.current));
+      setFieldErrors(nextFieldErrors);
+      if (Object.values(nextFieldErrors).some(Boolean)) return;
+    }
+    goToStep(Math.min(step + 1, LAST_STEP));
+  }
+
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
+    // Enter on an earlier step advances instead of submitting.
+    if (step < LAST_STEP) {
+      goNext();
+      return;
+    }
+
     setError(null);
 
     const formData = new FormData(e.currentTarget);
@@ -100,22 +161,12 @@ export function StartProjectForm() {
     const phone = String(formData.get("phone") || "").trim();
     const message = String(formData.get("message") || "").trim().slice(0, MESSAGE_MAX_LENGTH);
 
-    const nextFieldErrors: FieldErrors = {};
-    if (!firstname) nextFieldErrors.firstname = "First name is required.";
-    if (!lastname) nextFieldErrors.lastname = "Last name is required.";
-    if (!email) {
-      nextFieldErrors.email = "Business email is required.";
-    } else if (!EMAIL_PATTERN.test(email)) {
-      nextFieldErrors.email = "Please enter a valid email address.";
-    } else if (!isBusinessEmail(email)) {
-      nextFieldErrors.email = BUSINESS_EMAIL_ERROR;
-    }
-    if (website && !isValidWebsite(website)) {
-      nextFieldErrors.website = "Please enter a valid website address.";
-    }
-
+    const nextFieldErrors = validateContactFields(formData);
     setFieldErrors(nextFieldErrors);
-    if (Object.values(nextFieldErrors).some(Boolean)) return;
+    if (Object.values(nextFieldErrors).some(Boolean)) {
+      goToStep(CONTACT_STEP);
+      return;
+    }
 
     setStatus("submitting");
 
@@ -153,8 +204,14 @@ export function StartProjectForm() {
     );
   }
 
+  const stepClasses = "flex min-w-0 flex-col gap-6 border-0 p-0";
+  const nextButtonClasses =
+    "inline-flex w-fit cursor-pointer items-center justify-center rounded bg-cerulean px-4 py-2 text-xs font-bold uppercase tracking-[0.6px] text-white transition-colors hover:bg-cerulean-dark disabled:cursor-not-allowed disabled:opacity-60";
+  const backButtonClasses =
+    "cursor-pointer text-xs font-bold uppercase tracking-[0.6px] text-middle-grey underline underline-offset-4 hover:text-cerulean";
+
   return (
-    <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-6">
+    <form ref={formRef} onSubmit={handleSubmit} noValidate className="flex flex-col gap-6">
       {/* Honeypot field — visually hidden from real users, left unfilled by them */}
       <div className="absolute -left-[9999px]" aria-hidden="true">
         <label htmlFor="company_website">Company Website</label>
@@ -167,114 +224,157 @@ export function StartProjectForm() {
         />
       </div>
 
-      <div className="flex flex-col gap-6 sm:flex-row">
-        <div className="flex flex-1 flex-col gap-1">
-          <label className={labelClasses} htmlFor="firstname">
-            First Name<span className="text-red-600">*</span>
-          </label>
-          <input
-            id="firstname"
-            name="firstname"
-            type="text"
-            className={inputClasses}
-            onChange={() => clearFieldError("firstname")}
-          />
-          {fieldErrors.firstname && <p className={errorClasses}>{fieldErrors.firstname}</p>}
-        </div>
-        <div className="flex flex-1 flex-col gap-1">
-          <label className={labelClasses} htmlFor="lastname">
-            Last Name<span className="text-red-600">*</span>
-          </label>
-          <input
-            id="lastname"
-            name="lastname"
-            type="text"
-            className={inputClasses}
-            onChange={() => clearFieldError("lastname")}
-          />
-          {fieldErrors.lastname && <p className={errorClasses}>{fieldErrors.lastname}</p>}
-        </div>
-      </div>
+      <p className="text-xs font-bold uppercase tracking-[0.6px] text-cerulean" aria-live="polite">
+        Step {step + 1} of {STEPS.length}: {STEPS[step]}
+      </p>
 
-      <div className="flex flex-col gap-6 sm:flex-row">
-        <div className="flex flex-1 flex-col gap-1">
-          <label className={labelClasses} htmlFor="phone">
-            Phone Number
+      {/* Step 1 */}
+      <fieldset
+        ref={(el) => {
+          stepRefs.current[0] = el;
+        }}
+        hidden={step !== 0}
+        className={stepClasses}
+      >
+        <legend className="sr-only">{STEPS[0]}</legend>
+        <div className="flex flex-col gap-1">
+          <label className={labelClasses} htmlFor="interest">
+            I&rsquo;m Most Interested In
           </label>
-          <input id="phone" name="phone" type="tel" className={inputClasses} />
-        </div>
-        <div className="flex flex-1 flex-col gap-1">
-          <label className={labelClasses} htmlFor="email">
-            Business Email<span className="text-red-600">*</span>
-          </label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            className={inputClasses}
-            onChange={() => clearFieldError("email")}
-          />
-          {fieldErrors.email && <p className={errorClasses}>{fieldErrors.email}</p>}
-        </div>
-      </div>
-
-      <div className="flex flex-col gap-1">
-        <label className={labelClasses} htmlFor="website">
-          Website
-        </label>
-        <input
-          id="website"
-          name="website"
-          type="text"
-          className={inputClasses}
-          onChange={() => clearFieldError("website")}
-        />
-        {fieldErrors.website && <p className={errorClasses}>{fieldErrors.website}</p>}
-      </div>
-
-      <div className="flex flex-col gap-1">
-        <label className={labelClasses} htmlFor="interest">
-          I&rsquo;m Most Interested In
-        </label>
-        <select id="interest" name="interest" defaultValue="" className={inputClasses}>
-          <option value="" disabled>
-            Select Option
-          </option>
-          {INTEREST_OPTIONS.map((option) => (
-            <option key={option} value={option}>
-              {option}
+          <select id="interest" name="interest" defaultValue="" className={inputClasses}>
+            <option value="" disabled>
+              Select Option
             </option>
-          ))}
-        </select>
-      </div>
+            {INTEREST_OPTIONS.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        </div>
+      </fieldset>
 
-      <label className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.15em] text-middle-grey">
-        <input type="checkbox" name="newsletter" className="size-5 rounded border border-middle-grey" />
-        I would like to receive updates from Channel Partners
-      </label>
+      {/* Step 2 */}
+      <fieldset
+        ref={(el) => {
+          stepRefs.current[1] = el;
+        }}
+        hidden={step !== 1}
+        className={stepClasses}
+      >
+        <legend className="sr-only">{STEPS[1]}</legend>
+        <div className="flex flex-col gap-6 sm:flex-row">
+          <div className="flex flex-1 flex-col gap-1">
+            <label className={labelClasses} htmlFor="firstname">
+              First Name<span className="text-red-600">*</span>
+            </label>
+            <input
+              id="firstname"
+              name="firstname"
+              type="text"
+              className={inputClasses}
+              onChange={() => clearFieldError("firstname")}
+            />
+            {fieldErrors.firstname && <p className={errorClasses}>{fieldErrors.firstname}</p>}
+          </div>
+          <div className="flex flex-1 flex-col gap-1">
+            <label className={labelClasses} htmlFor="lastname">
+              Last Name<span className="text-red-600">*</span>
+            </label>
+            <input
+              id="lastname"
+              name="lastname"
+              type="text"
+              className={inputClasses}
+              onChange={() => clearFieldError("lastname")}
+            />
+            {fieldErrors.lastname && <p className={errorClasses}>{fieldErrors.lastname}</p>}
+          </div>
+        </div>
 
-      <div className="flex flex-col gap-1">
-        <label className={labelClasses} htmlFor="message">
-          Additional Information
+        <div className="flex flex-col gap-6 sm:flex-row">
+          <div className="flex flex-1 flex-col gap-1">
+            <label className={labelClasses} htmlFor="phone">
+              Phone Number
+            </label>
+            <input id="phone" name="phone" type="tel" className={inputClasses} />
+          </div>
+          <div className="flex flex-1 flex-col gap-1">
+            <label className={labelClasses} htmlFor="email">
+              Business Email<span className="text-red-600">*</span>
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              className={inputClasses}
+              onChange={() => clearFieldError("email")}
+            />
+            {fieldErrors.email && <p className={errorClasses}>{fieldErrors.email}</p>}
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <label className={labelClasses} htmlFor="website">
+            Website
+          </label>
+          <input
+            id="website"
+            name="website"
+            type="text"
+            className={inputClasses}
+            onChange={() => clearFieldError("website")}
+          />
+          {fieldErrors.website && <p className={errorClasses}>{fieldErrors.website}</p>}
+        </div>
+      </fieldset>
+
+      {/* Step 3 */}
+      <fieldset
+        ref={(el) => {
+          stepRefs.current[2] = el;
+        }}
+        hidden={step !== 2}
+        className={stepClasses}
+      >
+        <legend className="sr-only">{STEPS[2]}</legend>
+        <div className="flex flex-col gap-1">
+          <label className={labelClasses} htmlFor="message">
+            Additional Information
+          </label>
+          <textarea
+            id="message"
+            name="message"
+            rows={3}
+            maxLength={MESSAGE_MAX_LENGTH}
+            className={`${inputClasses} resize-y`}
+          />
+        </div>
+
+        <label className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.15em] text-middle-grey">
+          <input type="checkbox" name="newsletter" className="size-5 rounded border border-middle-grey" />
+          I would like to receive updates from Channel Partners
         </label>
-        <textarea
-          id="message"
-          name="message"
-          rows={3}
-          maxLength={MESSAGE_MAX_LENGTH}
-          className={`${inputClasses} resize-y`}
-        />
-      </div>
+      </fieldset>
 
       {error && <p className={errorClasses}>{error}</p>}
 
-      <button
-        type="submit"
-        disabled={status === "submitting"}
-        className="inline-flex w-fit cursor-pointer items-center justify-center rounded bg-cerulean px-4 py-2 text-xs font-bold uppercase tracking-[0.6px] text-white transition-colors hover:bg-cerulean-dark disabled:cursor-not-allowed disabled:opacity-60"
-      >
-        {status === "submitting" ? "Submitting…" : "Submit"}
-      </button>
+      <div className="flex items-center gap-6">
+        {step < LAST_STEP ? (
+          <button type="button" onClick={goNext} className={nextButtonClasses}>
+            Next
+          </button>
+        ) : (
+          <button type="submit" disabled={status === "submitting"} className={nextButtonClasses}>
+            {status === "submitting" ? "Submitting…" : "Submit"}
+          </button>
+        )}
+        {step > 0 && (
+          <button type="button" onClick={() => goToStep(step - 1)} className={backButtonClasses}>
+            Back
+          </button>
+        )}
+      </div>
     </form>
   );
 }
