@@ -14,12 +14,12 @@ import {
   Tag,
   Thermometer,
   TreePalm,
-  TriangleAlert,
   UserPlus,
   Wallet,
   type LucideIcon,
 } from "lucide-react";
 import { useId, useRef, useState, type KeyboardEvent } from "react";
+import { VerifyBadge, WithPlaceholders } from "@/components/ui/ContentPlaceholder";
 
 type Benefit = { label: string; icon: LucideIcon };
 type BenefitGroup = { heading?: string; items: Benefit[]; verify?: string };
@@ -99,38 +99,6 @@ const FOOTNOTES = [
   "Weekly pay eligibility: [VERIFY: HR]",
   "Sick time varies by state: [VERIFY: HR]",
 ];
-
-// Pre-launch reminder styling for anything still waiting on HR.
-const HIGHLIGHT = "rounded bg-amber-100 px-1.5 py-0.5 font-bold text-amber-900";
-
-function VerifyBadge({ note }: { note: string }) {
-  return (
-    <span
-      title={note}
-      className={`inline-flex items-center gap-1.5 text-xs uppercase tracking-[0.6px] ${HIGHLIGHT}`}
-    >
-      <TriangleAlert aria-hidden className="size-3.5" />
-      Verify with HR
-    </span>
-  );
-}
-
-// Wraps [bracketed] placeholders in a highlight so they stand out.
-function WithPlaceholders({ text }: { text: string }) {
-  return (
-    <>
-      {text.split(/(\[[^\]]+\])/).map((part, i) =>
-        part.startsWith("[") ? (
-          <mark key={i} className={HIGHLIGHT}>
-            {part}
-          </mark>
-        ) : (
-          part
-        )
-      )}
-    </>
-  );
-}
 
 export function Benefits() {
   const [active, setActive] = useState(0);
@@ -220,7 +188,7 @@ export function Benefits() {
                   {(group.heading || group.verify) && (
                     <div className="flex flex-wrap items-center gap-3">
                       {group.heading && <h3 className="header-6 text-black">{group.heading}</h3>}
-                      {group.verify && <VerifyBadge note={group.verify} />}
+                      {group.verify && <VerifyBadge owner="HR" note={group.verify} />}
                     </div>
                   )}
                   <ul className="flex flex-col gap-3">
