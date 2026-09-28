@@ -3,9 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
-
-const ICIMS_BASE =
-  "https://careers-channelpartners.icims.com/jobs/search?ss=1&searchRelation=keyword_all";
+import { ICIMS_SEARCH_URL as ICIMS_BASE } from "@/lib/jobs";
 
 const ICON_DIR = "/images/careers/icons";
 

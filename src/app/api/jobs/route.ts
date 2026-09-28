@@ -23,6 +23,14 @@ function cleanPortalField(value: string): string {
   return trimmed;
 }
 
+// US ZIPs can lose their leading zero upstream (e.g. Brookline, MA "02445" -> "2445"),
+// which makes geocoding 404. Keep the 5-digit base of ZIP+4 and left-pad numeric ZIPs.
+function normalizeZip(value: string): string {
+  const trimmed = value.trim();
+  const match = trimmed.match(/^(\d{1,5})(?:-\d{4})?$/);
+  return match ? match[1].padStart(5, "0") : trimmed;
+}
+
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -37,7 +45,8 @@ async function geocodeZip(zip: string): Promise<{ lat: number; lng: number } | n
   try {
     const res = await fetch(`https://api.zippopotam.us/us/${encodeURIComponent(zip)}`);
     if (!res.ok) {
-      geocodeCache.set(zip, null);
+      // Only a 404 means the ZIP is unknown; don't let a transient error stick.
+      if (res.status === 404) geocodeCache.set(zip, null);
       return null;
     }
     const data = await res.json();
@@ -50,7 +59,6 @@ async function geocodeZip(zip: string): Promise<{ lat: number; lng: number } | n
     geocodeCache.set(zip, coords);
     return coords;
   } catch {
-    geocodeCache.set(zip, null);
     return null;
   }
 }
@@ -60,7 +68,13 @@ async function fetchAndNormalizeJobs(feedUrl: string): Promise<Job[]> {
   if (!res.ok) throw new Error(`Feed request failed: ${res.status}`);
   const xmlText = await res.text();
 
-  const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: "@_" });
+  // parseTagValue: false keeps every column a string — the default number parsing
+  // strips leading zeros from postal codes.
+  const parser = new XMLParser({
+    ignoreAttributes: false,
+    attributeNamePrefix: "@_",
+    parseTagValue: false,
+  });
   const parsed = parser.parse(xmlText);
 
   const rowsRaw = parsed?.File?.Row ?? parsed?.Grid?.Row ?? parsed?.Rows?.Row ?? [];
@@ -81,7 +95,7 @@ async function fetchAndNormalizeJobs(feedUrl: string): Promise<Job[]> {
 
     if (cols["Job Folder/Status"] !== "Open") continue;
 
-    const zip = cols["Position Location : Postal Code"] || "";
+    const zip = normalizeZip(cols["Position Location : Postal Code"] || "");
     const coords = await geocodeZip(zip);
 
     jobs.push({

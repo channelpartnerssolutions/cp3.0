@@ -14,6 +14,9 @@ export type Job = {
   positionType: string;
 };
 
+export const ICIMS_SEARCH_URL =
+  "https://careers-channelpartners.icims.com/jobs/search?ss=1&searchRelation=keyword_all";
+
 export const CATEGORIES = [
   "Display Maintenance",
   "Corporate",

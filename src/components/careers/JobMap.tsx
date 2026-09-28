@@ -7,7 +7,14 @@ import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Map as LeafletMap, LayerGroup, Marker, Path } from "leaflet";
 import { Container } from "@/components/ui/Container";
-import { CATEGORIES, POSITION_TYPES, US_STATE_ABBR, formatPayRange, type Job } from "@/lib/jobs";
+import {
+  CATEGORIES,
+  ICIMS_SEARCH_URL,
+  POSITION_TYPES,
+  US_STATE_ABBR,
+  formatPayRange,
+  type Job,
+} from "@/lib/jobs";
 
 const CARTO_API_KEY = process.env.NEXT_PUBLIC_CARTO_API_KEY ?? "";
 
@@ -37,6 +44,24 @@ function haversineMiles(a: [number, number], b: [number, number]): number {
   const h = Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
   return 2 * R * Math.asin(Math.sqrt(h));
 }
+
+// Popups are raw HTML strings, and job fields come straight from the iCIMS feed.
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function applyUrlFor(job: Job): string {
+  return job.applyUrl || ICIMS_SEARCH_URL;
+}
+
+type MarkerClusterGroup = LayerGroup & {
+  zoomToShowLayer: (layer: Marker, callback: () => void) => void;
+};
 
 function jobMatches(
   job: Job,
@@ -107,6 +132,13 @@ export function JobMap() {
   const filteredJobs = useMemo(
     () => jobs.filter((job) => jobMatches(job, filters)),
     [jobs, filters]
+  );
+
+  // Jobs the geocoder couldn't place still need to be findable, so they're listed
+  // separately regardless of the map's current bounds.
+  const unmappedJobs = useMemo(
+    () => filteredJobs.filter((job) => job.lat == null || job.lng == null),
+    [filteredJobs]
   );
 
   const availableStates = useMemo(() => {
@@ -296,15 +328,11 @@ export function JobMap() {
           const pay = formatPayRange(job.minPay, job.maxPay);
           marker.bindPopup(
             `<div style="font-family:inherit;min-width:200px;">
-               <p style="margin:0 0 4px;font-weight:700;">${job.title}</p>
-               <p style="margin:0 0 4px;color:#666;">${job.city}, ${job.state}</p>
-               ${pay ? `<p style="margin:0 0 4px;">${pay}</p>` : ""}
-               <p style="margin:0 0 8px;color:#666;font-size:12px;">Req ID: ${job.requisitionId}</p>
-               ${
-                 job.applyUrl
-                   ? `<a href="${job.applyUrl}" target="_blank" rel="noreferrer" style="color:#0275b3;font-weight:700;">View &amp; Apply</a>`
-                   : ""
-               }
+               <p style="margin:0 0 4px;font-weight:700;">${escapeHtml(job.title)}</p>
+               <p style="margin:0 0 4px;color:#666;">${escapeHtml(job.city)}, ${escapeHtml(job.state)}</p>
+               ${pay ? `<p style="margin:0 0 4px;">${escapeHtml(pay)}</p>` : ""}
+               <p style="margin:0 0 8px;color:#666;font-size:12px;">Req ID: ${escapeHtml(job.requisitionId)}</p>
+               <a href="${escapeHtml(applyUrlFor(job))}" target="_blank" rel="noreferrer" style="color:#0275b3;font-weight:700;">View &amp; Apply</a>
              </div>`
           );
           group.addLayer(marker);
@@ -365,11 +393,55 @@ export function JobMap() {
 
   const flyToJob = (job: Job) => {
     const map = mapRef.current;
-    if (!map || job.lat == null || job.lng == null) return;
-    map.flyTo([job.lat, job.lng], Math.max(map.getZoom(), 10));
     const marker = markersByReqIdRef.current[job.requisitionId];
-    window.setTimeout(() => marker?.openPopup(), 400);
+    if (!map || !marker) return;
+    const group = clusterGroupsRef.current[job.state] as MarkerClusterGroup | undefined;
+    map.once("moveend", () => {
+      // The map may have been torn down or rebuilt mid-flight.
+      if (mapRef.current !== map) return;
+      // The marker may still be hidden inside a cluster at this zoom.
+      if (group?.hasLayer(marker)) {
+        group.zoomToShowLayer(marker, () => marker.openPopup());
+      } else {
+        marker.openPopup();
+      }
+    });
+    map.flyTo(marker.getLatLng(), Math.max(map.getZoom(), 10));
   };
+
+  const renderJobRow = (job: Job, mapped: boolean) => (
+    <div key={job.requisitionId} className="flex items-start gap-3 py-4">
+      <a
+        href={applyUrlFor(job)}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="group flex flex-1 flex-col items-start gap-1 text-left"
+      >
+        <p className="text-base font-bold text-black group-hover:text-cerulean">{job.title}</p>
+        <p className="text-sm text-middle-grey">
+          {job.city}, {job.state}
+        </p>
+        {formatPayRange(job.minPay, job.maxPay) && (
+          <p className="text-sm text-black">{formatPayRange(job.minPay, job.maxPay)}</p>
+        )}
+        <p className="text-xs text-middle-grey">Req ID: {job.requisitionId}</p>
+        <span className="mt-1 text-xs font-bold uppercase tracking-[0.6px] text-cerulean group-hover:underline">
+          View &amp; Apply
+          <span className="sr-only"> (opens in a new tab)</span>
+        </span>
+      </a>
+      {mapped && (
+        <button
+          type="button"
+          onClick={() => flyToJob(job)}
+          aria-label={`Show ${job.title} in ${job.city}, ${job.state} on the map`}
+          className="shrink-0 text-xs font-bold uppercase tracking-[0.6px] text-middle-grey hover:text-cerulean"
+        >
+          Show on map
+        </button>
+      )}
+    </div>
+  );
 
   const resetFilters = () => {
     setKeyword("");
@@ -451,29 +523,21 @@ export function JobMap() {
             </select>
 
             <p className="text-xs uppercase tracking-[0.6px] text-middle-grey">
-              Showing {visibleJobs.length} of {filteredJobs.length} position
+              Showing {visibleJobs.length + unmappedJobs.length} of {filteredJobs.length} position
               {filteredJobs.length === 1 ? "" : "s"}
             </p>
 
             <div className="flex flex-col divide-y divide-light-grey overflow-y-auto lg:max-h-full">
-              {visibleJobs.map((job) => (
-                <button
-                  key={job.requisitionId}
-                  type="button"
-                  onClick={() => flyToJob(job)}
-                  className="flex flex-col items-start gap-1 py-4 text-left hover:bg-light-grey/40"
-                >
-                  <p className="text-base font-bold text-black">{job.title}</p>
-                  <p className="text-sm text-middle-grey">
-                    {job.city}, {job.state}
+              {visibleJobs.map((job) => renderJobRow(job, true))}
+              {unmappedJobs.length > 0 && (
+                <>
+                  <p className="pb-2 pt-6 text-xs font-bold uppercase tracking-[0.6px] text-middle-grey">
+                    Location not mapped
                   </p>
-                  {formatPayRange(job.minPay, job.maxPay) && (
-                    <p className="text-sm text-black">{formatPayRange(job.minPay, job.maxPay)}</p>
-                  )}
-                  <p className="text-xs text-middle-grey">Req ID: {job.requisitionId}</p>
-                </button>
-              ))}
-              {visibleJobs.length === 0 && (
+                  {unmappedJobs.map((job) => renderJobRow(job, false))}
+                </>
+              )}
+              {visibleJobs.length === 0 && unmappedJobs.length === 0 && (
                 <p className="py-4 text-sm text-middle-grey">
                   No open positions in view — try zooming out or clearing filters.
                 </p>
