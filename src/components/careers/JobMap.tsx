@@ -444,7 +444,7 @@ export function JobMap() {
         href={applyUrlFor(job)}
         target="_blank"
         rel="noopener noreferrer"
-        className="group flex flex-1 flex-col items-start gap-1 text-left"
+        className="group relative flex flex-1 flex-col items-start gap-1 text-left"
       >
         <p className="text-base font-bold text-black group-hover:text-cerulean">{job.title}</p>
         <p className="text-sm text-middle-grey">
@@ -649,7 +649,7 @@ export function JobMap() {
               {filteredJobs.length === 1 ? "" : "s"}
             </p>
 
-            <div className="flex flex-col divide-y divide-light-grey overflow-y-auto lg:max-h-full">
+            <div className="relative flex flex-col divide-y divide-light-grey overflow-y-auto lg:max-h-full">
               {visibleJobs.map((job) => renderJobRow(job, true))}
               {unmappedJobs.length > 0 && (
                 <>
