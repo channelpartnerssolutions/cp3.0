@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { HeaderSpacer } from "./HeaderSpacer";
 import { NavOverlay } from "./NavOverlay";
+import { PillarSwitcher } from "./PillarSwitcher";
 import { SiteHeaderBar } from "./SiteHeaderBar";
 import { useHeaderTheme } from "./useHeaderTheme";
 import { useMeasuredHeight } from "./useMeasuredHeight";
@@ -11,7 +12,7 @@ import { useScrollReveal } from "./useScrollReveal";
 // SSR-only cosmetic floor for the spacer/CSS var before the real height is
 // measured on mount — never used for scroll math, which always reads the
 // live measured value.
-const FALLBACK_HEIGHT = 62;
+const FALLBACK_HEIGHT = 94;
 
 export function GatewayHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -31,6 +32,7 @@ export function GatewayHeader() {
   return (
     <header>
       <div ref={barRef} className={`left-0 z-[60] w-full ${positionClasses}`}>
+        <PillarSwitcher />
         <SiteHeaderBar theme={theme} menuOpen={menuOpen} onToggle={() => setMenuOpen((v) => !v)} />
       </div>
       <HeaderSpacer height={headerHeight} cssVar="--gateway-header-height" />

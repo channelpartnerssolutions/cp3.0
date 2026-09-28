@@ -34,7 +34,7 @@
 
   /* Header heights — SSR fallback only, corrected client-side by
      ResizeObserver in HeaderSpacer once the real bar is measured. */
-  --gateway-header-height: 62px;
+  --gateway-header-height: 94px;
   --pillar-header-height: 94px;
 
   /* Brand typefaces served via Adobe Fonts (Typekit) — see kit link in root layout */

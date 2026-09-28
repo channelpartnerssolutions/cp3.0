@@ -7,6 +7,7 @@ import { HamburgerToggle } from "./HamburgerToggle";
 const navLinks = [
   { href: "/about", label: "Who We Are" },
   { href: "/blog", label: "Blog" },
+  { href: "/careers", label: "Careers" },
   { href: "/contact", label: "Contact" },
 ];
 
@@ -44,7 +45,7 @@ export function SiteHeaderBar({
               {link.label}
             </Link>
           ))}
-          <Button href="/careers" variant="primary">
+          <Button href="/careers#open-positions" variant="primary">
             We&rsquo;re Hiring!
           </Button>
         </div>

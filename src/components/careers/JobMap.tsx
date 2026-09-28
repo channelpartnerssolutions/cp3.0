@@ -534,7 +534,10 @@ export function JobMap() {
   };
 
   return (
-    <section className="w-full bg-white pb-[80px] pt-[40px]">
+    <section
+      id="open-positions"
+      className="w-full scroll-mt-[var(--gateway-header-height)] bg-white pb-[80px] pt-[40px]"
+    >
       <div className="flex flex-col gap-6 lg:h-[720px] lg:flex-row">
         <div className="relative h-[420px] w-full overflow-hidden lg:h-full lg:flex-1">
           <div ref={mapContainerRef} className="size-full" />

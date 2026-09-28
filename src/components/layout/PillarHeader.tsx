@@ -4,11 +4,12 @@ import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
-import { pillars, type PillarConfig } from "@/lib/pillars";
+import type { PillarConfig } from "@/lib/pillars";
 import { CpIconMark } from "./CpIconMark";
 import { HamburgerToggle } from "./HamburgerToggle";
 import { HeaderSpacer } from "./HeaderSpacer";
 import { NavOverlay } from "./NavOverlay";
+import { PillarSwitcher } from "./PillarSwitcher";
 import { useHeaderTheme } from "./useHeaderTheme";
 import { useMeasuredHeight } from "./useMeasuredHeight";
 import { useScrollReveal } from "./useScrollReveal";
@@ -39,24 +40,7 @@ export function PillarHeader({ pillar }: { pillar: PillarConfig }) {
   return (
     <header>
       <div ref={barRef} className={`left-0 z-[60] w-full ${positionClasses}`}>
-        <div className="flex w-full items-center justify-center gap-4 bg-near-black py-2">
-          <Link href="/" aria-label="Channel Partners home" className="flex items-center text-white">
-            <CpIconMark className="h-[13px] w-[22px]" />
-          </Link>
-          {pillars.map((p) => (
-            <span key={p.slug} className="flex items-center gap-4">
-              <span className="h-3 w-px bg-white/40" />
-              <Link
-                href={`/${p.slug}`}
-                className={`text-xs font-light tracking-[1.8px] text-white hover:opacity-100 ${
-                  p.slug === pillar.slug ? "opacity-100" : "opacity-50"
-                }`}
-              >
-                {p.switchLabel}
-              </Link>
-            </span>
-          ))}
-        </div>
+        <PillarSwitcher activeSlug={pillar.slug} />
 
         <Container className="flex items-center justify-between gap-8 py-[15px]">
           <Link href={`/${pillar.slug}`} className="flex items-center gap-3">
