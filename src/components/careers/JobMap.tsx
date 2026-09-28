@@ -7,6 +7,7 @@ import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CircleMarker, Map as LeafletMap, LayerGroup, Marker, Path } from "leaflet";
 import { Container } from "@/components/ui/Container";
+import { useJobs } from "./useJobs";
 import {
   CATEGORIES,
   ICIMS_SEARCH_URL,
@@ -94,7 +95,8 @@ export function JobMap() {
   const geoCatchUpDoneRef = useRef(false);
   const userMarkerRef = useRef<CircleMarker | null>(null);
 
-  const [jobs, setJobs] = useState<Job[]>([]);
+  const loadedJobs = useJobs();
+  const jobs = useMemo(() => loadedJobs ?? [], [loadedJobs]);
   const [mapReady, setMapReady] = useState(false);
   const [keyword, setKeyword] = useState("");
   const [category, setCategory] = useState("");
@@ -103,13 +105,6 @@ export function JobMap() {
   const [visibleJobs, setVisibleJobs] = useState<Job[]>([]);
   const [useCurrentLocation, setUseCurrentLocation] = useState(false);
   const [geoMessage, setGeoMessage] = useState("");
-
-  useEffect(() => {
-    fetch("/api/jobs")
-      .then((res) => res.json())
-      .then((data) => setJobs(data.jobs ?? []))
-      .catch(() => setJobs([]));
-  }, []);
 
   useEffect(() => {
     jobsRef.current = jobs;
