@@ -1,22 +1,21 @@
 "use client";
 
 import { CountUp } from "@/components/ui/CountUp";
-import { useJobs } from "./useJobs";
+import type { Job } from "@/lib/jobs";
 
 const VALUE_CLASS = "font-display text-6xl italic md:text-8xl";
 
 type Stat = { value: string; label: string; animate?: boolean };
 
-export function CareersStats() {
-  const jobs = useJobs();
+export function CareersStats({ jobs }: { jobs: Job[] }) {
 
   const stats: Stat[] = [
     { value: "100%", label: "W-2 employees. No gig work" },
     { value: "52", label: "Paydays a year with weekly pay" },
     // Not a count, so it doesn't animate ("Day 0" → "Day 1" would read oddly).
     { value: "Day 1", label: "Paid training before your first shift starts", animate: false },
-    // Live count of the positions on the job map; a dash holds the space while loading.
-    { value: jobs ? String(jobs.length) : "–", label: "Open jobs hiring right now" },
+    // Live count of the positions on the job map.
+    { value: String(jobs.length), label: "Open jobs hiring right now" },
   ];
 
   return (

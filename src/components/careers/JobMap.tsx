@@ -7,7 +7,6 @@ import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CircleMarker, Map as LeafletMap, LayerGroup, Marker, Path } from "leaflet";
 import { Container } from "@/components/ui/Container";
-import { useJobs } from "./useJobs";
 import {
   CATEGORIES,
   ICIMS_SEARCH_URL,
@@ -34,6 +33,11 @@ const NORTH_AMERICA_BOUNDS: [[number, number], [number, number]] = [
 // IP-based geolocation error; if nothing falls within it, recentering would
 // just make the map look empty, so the North America view is kept instead.
 const NEARBY_JOB_RADIUS_MILES = 75;
+
+// At this zoom and closer the view is about one state, whose outline then fills
+// the whole map — so the outlines stop reacting to the mouse (no hand cursor,
+// highlight, tooltip, or click-to-filter) and only the job pins are interactive.
+const STATE_OUTLINES_INERT_ZOOM = 7;
 
 // Sentinel value for the "Use Current Location" option in the location dropdown.
 const CURRENT_LOCATION = "__current__";
@@ -92,7 +96,7 @@ function jobMatches(
   return true;
 }
 
-export function JobMap() {
+export function JobMap({ jobs }: { jobs: Job[] }) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<LeafletMap | null>(null);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
@@ -100,45 +104,26 @@ export function JobMap() {
   const userLocationRef = useRef<[number, number] | null>(null);
   const clusterGroupsRef = useRef<Record<string, LayerGroup>>({});
   const markersByReqIdRef = useRef<Record<string, Marker>>({});
-  const jobsRef = useRef<Job[]>([]);
-  const jobsLoadedRef = useRef(false);
+  const jobsRef = useRef<Job[]>(jobs);
   const applyFramingRef = useRef<(() => void) | null>(null);
   const framingAppliedRef = useRef(false);
-  const geoCatchUpDoneRef = useRef(false);
   // Set by Reset so a still-pending on-load location lookup doesn't recenter afterwards.
   const autoLocateDismissedRef = useRef(false);
   const userMarkerRef = useRef<CircleMarker | null>(null);
 
-  const loadedJobs = useJobs();
-  const jobs = useMemo(() => loadedJobs ?? [], [loadedJobs]);
   const [mapReady, setMapReady] = useState(false);
   const [keyword, setKeyword] = useState("");
   const [category, setCategory] = useState("");
   const [positionType, setPositionType] = useState("");
   const [stateFilter, setStateFilter] = useState("");
-  const [visibleJobs, setVisibleJobs] = useState<Job[]>([]);
+  // Null until the map reports its bounds; the list shows every mapped job until then.
+  const [visibleJobs, setVisibleJobs] = useState<Job[] | null>(null);
   const [useCurrentLocation, setUseCurrentLocation] = useState(false);
   const [geoMessage, setGeoMessage] = useState("");
 
   useEffect(() => {
     jobsRef.current = jobs;
-    jobsLoadedRef.current = loadedJobs !== null;
-  }, [jobs, loadedJobs]);
-
-  // If geolocation resolved before the jobs fetch finished, re-run the
-  // initial framing once jobs arrive so a nearby-jobs recenter isn't missed.
-  useEffect(() => {
-    if (
-      jobs.length > 0 &&
-      mapReady &&
-      userLocationRef.current &&
-      !hasActiveFilterRef.current &&
-      !geoCatchUpDoneRef.current
-    ) {
-      geoCatchUpDoneRef.current = true;
-      applyFramingRef.current?.();
-    }
-  }, [jobs, mapReady]);
+  }, [jobs]);
 
   const filters = useMemo(
     () => ({ keyword, category, positionType, state: stateFilter }),
@@ -155,6 +140,11 @@ export function JobMap() {
   const unmappedJobs = useMemo(
     () => filteredJobs.filter((job) => job.lat == null || job.lng == null),
     [filteredJobs]
+  );
+
+  const listedJobs = useMemo(
+    () => visibleJobs ?? filteredJobs.filter((job) => job.lat != null && job.lng != null),
+    [visibleJobs, filteredJobs]
   );
 
   const availableStates = useMemo(() => {
@@ -235,7 +225,7 @@ export function JobMap() {
       // arrive, without holding up the rest of the setup; skipped if the fetch fails.
       statesGeoPromise.then((statesGeo) => {
         if (cancelled || !statesGeo) return;
-        L.geoJSON(statesGeo, {
+        const statesLayer = L.geoJSON(statesGeo, {
           style: { color: "#0275b3", weight: 1, fillOpacity: 0.04 },
           onEachFeature: (feature, layer) => {
             const name = feature?.properties?.name as string | undefined;
@@ -250,6 +240,23 @@ export function JobMap() {
             });
           },
         }).addTo(map);
+
+        const updateStatesInteractivity = () => {
+          const inert = map.getZoom() >= STATE_OUTLINES_INERT_ZOOM;
+          statesLayer.eachLayer((layer) => {
+            const path = layer as Path;
+            const element = path.getElement() as SVGElement | undefined;
+            if (element) element.style.pointerEvents = inert ? "none" : "";
+            if (inert) {
+              // The pointer may have been over a state when it went inert, so
+              // mouseout never fires: clear the hover state by hand.
+              path.closeTooltip();
+              path.setStyle({ fillOpacity: 0.04 });
+            }
+          });
+        };
+        updateStatesInteractivity();
+        map.on("zoomend", updateStatesInteractivity);
       });
 
       mapRef.current = map;
@@ -263,6 +270,10 @@ export function JobMap() {
         const { width, height } = container.getBoundingClientRect();
         if (width === 0 || height === 0) return; // not laid out yet — wait for next observation
         map.invalidateSize();
+        // No animation: Leaflet drops a zoom requested while another is still
+        // animating, so a cached location arriving mid-way through the initial
+        // North America zoom (e.g. on returning to the page) would be ignored.
+        const instant = { animate: false };
         if (!hasActiveFilterRef.current) {
           if (userLocationRef.current) {
             const nearby = jobsRef.current.filter(
@@ -272,21 +283,17 @@ export function JobMap() {
                 haversineMiles(userLocationRef.current as [number, number], [job.lat, job.lng]) <=
                   NEARBY_JOB_RADIUS_MILES
             );
-            if (!jobsLoadedRef.current) {
-              // Jobs are still loading: show the visitor's area now; the
-              // catch-up effect tightens the view around nearby jobs later.
-              map.setView(userLocationRef.current, 8);
-            } else if (nearby.length > 0) {
+            if (nearby.length > 0) {
               const points: [number, number][] = [
                 userLocationRef.current,
                 ...nearby.map((job) => [job.lat as number, job.lng as number] as [number, number]),
               ];
-              map.fitBounds(L.latLngBounds(points), { padding: [40, 40], maxZoom: 10 });
+              map.fitBounds(L.latLngBounds(points), { ...instant, padding: [40, 40], maxZoom: 10 });
             } else {
-              map.fitBounds(NORTH_AMERICA_BOUNDS);
+              map.fitBounds(NORTH_AMERICA_BOUNDS, instant);
             }
           } else {
-            map.fitBounds(NORTH_AMERICA_BOUNDS);
+            map.fitBounds(NORTH_AMERICA_BOUNDS, instant);
           }
           framingAppliedRef.current = true;
         }
@@ -548,7 +555,6 @@ export function JobMap() {
   // Back to the default starting view: no filters and no geolocation framing.
   const resetFilters = () => {
     autoLocateDismissedRef.current = true;
-    geoCatchUpDoneRef.current = true;
     userLocationRef.current = null;
     userMarkerRef.current?.remove();
     userMarkerRef.current = null;
@@ -645,12 +651,12 @@ export function JobMap() {
             )}
 
             <p className="text-xs uppercase tracking-[0.6px] text-middle-grey">
-              Showing {visibleJobs.length + unmappedJobs.length} of {filteredJobs.length} position
+              Showing {listedJobs.length + unmappedJobs.length} of {filteredJobs.length} position
               {filteredJobs.length === 1 ? "" : "s"}
             </p>
 
             <div className="relative flex flex-col divide-y divide-light-grey overflow-y-auto lg:max-h-full">
-              {visibleJobs.map((job) => renderJobRow(job, true))}
+              {listedJobs.map((job) => renderJobRow(job, true))}
               {unmappedJobs.length > 0 && (
                 <>
                   <p className="pb-2 pt-6 text-xs font-bold uppercase tracking-[0.6px] text-middle-grey">
@@ -659,10 +665,26 @@ export function JobMap() {
                   {unmappedJobs.map((job) => renderJobRow(job, false))}
                 </>
               )}
-              {visibleJobs.length === 0 && unmappedJobs.length === 0 && (
+              {jobs.length === 0 ? (
                 <p className="py-4 text-sm text-middle-grey">
-                  No open positions in view — try zooming out or clearing filters.
+                  Job listings are temporarily unavailable.{" "}
+                  <a
+                    href={ICIMS_SEARCH_URL}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-cerulean underline underline-offset-2"
+                  >
+                    Browse all openings on our careers portal
+                  </a>
+                  .
                 </p>
+              ) : (
+                listedJobs.length === 0 &&
+                unmappedJobs.length === 0 && (
+                  <p className="py-4 text-sm text-middle-grey">
+                    No open positions in view — try zooming out or clearing filters.
+                  </p>
+                )
               )}
             </div>
           </aside>
