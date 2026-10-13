@@ -21,6 +21,17 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
+  async redirects() {
+    return [
+      // The per-pillar solutions overview pages were removed (Solutions is a
+      // dropdown now); send old links and bookmarks to the pillar home page.
+      {
+        source: "/:pillar(retail-execution|training-enablement|experiential-marketing)/solutions",
+        destination: "/:pillar",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
@@ -10,6 +11,7 @@ import { HamburgerToggle } from "./HamburgerToggle";
 import { HeaderSpacer } from "./HeaderSpacer";
 import { NavOverlay } from "./NavOverlay";
 import { PillarSwitcher } from "./PillarSwitcher";
+import { SolutionsMenu } from "./SolutionsMenu";
 import { useHeaderTheme } from "./useHeaderTheme";
 import { useMeasuredHeight } from "./useMeasuredHeight";
 import { useScrollReveal } from "./useScrollReveal";
@@ -25,7 +27,20 @@ export function PillarHeader({ pillar }: { pillar: PillarConfig }) {
   const headerHeight = height || FALLBACK_HEIGHT;
   const theme = useHeaderTheme(headerHeight);
   const { pinned, pastHeader, animate } = useScrollReveal(headerHeight);
+  const pathname = usePathname();
   const textColor = theme === "dark" ? "text-white" : "text-near-black";
+  // Solutions is a dropdown (SolutionsMenu); these follow it, then the
+  // pillar's CTA button.
+  const navLinks = [
+    { href: `/${pillar.slug}/case-studies`, label: "Case Studies" },
+    { href: `/${pillar.slug}/about`, label: "Meet the Team" },
+    { href: "/careers", label: "Careers" },
+  ];
+  const isCurrent = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
+  // Experiential's white-outline button only works over a dark hero; on a
+  // light header it would be white on white, so use the solid blue button.
+  const ctaVariant =
+    theme === "light" && pillar.ctaVariant === "outline-light" ? "primary" : pillar.ctaVariant;
   const dividerColor = theme === "dark" ? "bg-white/40" : "bg-near-black/30";
   const barColor = theme === "dark" ? "bg-white" : "bg-near-black";
   const solidBg = theme === "dark" ? "bg-near-black" : "bg-white";
@@ -61,13 +76,20 @@ export function PillarHeader({ pillar }: { pillar: PillarConfig }) {
                 menuOpen ? "pointer-events-none opacity-0" : "opacity-100"
               }`}
             >
-              <Link href={`/${pillar.slug}/solutions`} className={`text-base hover:text-cerulean ${textColor}`}>
-                Solutions
-              </Link>
-              <Link href={`/${pillar.slug}/about`} className={`text-base hover:text-cerulean ${textColor}`}>
-                Meet the Team
-              </Link>
-              <Button href={`/contact?source=${pillar.slug}`} variant={pillar.ctaVariant}>
+              <SolutionsMenu pillar={pillar} textColor={textColor} />
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  aria-current={isCurrent(link.href) ? "page" : undefined}
+                  className={`text-base hover:text-cerulean ${
+                    isCurrent(link.href) ? "text-cerulean" : textColor
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              ))}
+              <Button href={`/contact?source=${pillar.slug}`} variant={ctaVariant}>
                 {pillar.ctaLabel}
               </Button>
             </div>
@@ -85,11 +107,11 @@ export function PillarHeader({ pillar }: { pillar: PillarConfig }) {
         onClose={() => setMenuOpen(false)}
         sectionLinks={{
           title: pillar.label,
-          links: [
-            { href: `/${pillar.slug}/solutions`, label: "Solutions" },
-            { href: `/${pillar.slug}/about`, label: "Meet the Team" },
-            { href: `/contact?source=${pillar.slug}`, label: pillar.ctaLabel },
-          ],
+          solutions: pillar.solutions.map((solution) => ({
+            href: `/${pillar.slug}/solutions/${solution.slug}`,
+            label: solution.label,
+          })),
+          links: [...navLinks, { href: `/contact?source=${pillar.slug}`, label: pillar.ctaLabel }],
         }}
       />
     </header>

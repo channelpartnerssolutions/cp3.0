@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { pillars } from "@/lib/pillars";
+import { SOCIAL_NETWORKS } from "./SocialIcons";
 
 const companyLinks = [
   { href: "/about", label: "Who We Are" },
@@ -18,14 +19,10 @@ const retailPartnerships = [
   { href: "/target-preferred-merchandising-partner", label: "Target Preferred Merchandising Partner" },
 ];
 
-// TODO(content): add profile URLs. Links with an empty href are not rendered.
-const socialLinks = [
-  { href: "", label: "LinkedIn" },
-  { href: "", label: "Instagram" },
-  { href: "", label: "YouTube" },
-].filter((link) => link.href);
+const socialLinks = SOCIAL_NETWORKS.filter((link) => link.href);
 
-type SectionLinks = { title: string; links: { href: string; label: string }[] };
+type NavLink = { href: string; label: string };
+type SectionLinks = { title: string; links: NavLink[]; solutions?: NavLink[] };
 
 export function NavOverlay({
   open,
@@ -88,6 +85,23 @@ export function NavOverlay({
             <span className="font-heading text-lg tracking-[3.24px] uppercase text-white">
               {sectionLinks.title}
             </span>
+            {sectionLinks.solutions && sectionLinks.solutions.length > 0 && (
+              <div className="flex flex-wrap gap-2 text-base">
+                <span className="text-white/60">Solutions:</span>
+                {sectionLinks.solutions.map((link, i) => (
+                  <span key={link.href} className="flex gap-2">
+                    {i > 0 && <span>/</span>}
+                    <Link
+                      href={link.href}
+                      onClick={onClose}
+                      className={`hover:text-cerulean ${isActive(link.href) ? "text-cerulean" : ""}`}
+                    >
+                      {link.label}
+                    </Link>
+                  </span>
+                ))}
+              </div>
+            )}
             <div className="flex flex-wrap gap-2 text-base">
               {sectionLinks.links.map((link, i) => (
                 <span key={link.href} className="flex gap-2">
