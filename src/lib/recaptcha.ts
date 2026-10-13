@@ -1,5 +1,8 @@
 export const RECAPTCHA_SITE_KEY = "6LcBTCYsAAAAAFqqIM2wUvmExbz7rVvDtWJHmSxo";
 const RECAPTCHA_MIN_SCORE = 0.5;
+// Google's script can fail to load or never answer (blocked, offline, or a
+// domain the site key doesn't allow), so give up rather than wait forever.
+const RECAPTCHA_TIMEOUT_MS = 10_000;
 
 declare global {
   interface Window {
@@ -16,11 +19,17 @@ function loadRecaptchaScript(): Promise<void> {
   if (window.grecaptcha) return Promise.resolve();
   if (scriptPromise) return scriptPromise;
 
-  scriptPromise = new Promise((resolve) => {
+  scriptPromise = new Promise((resolve, reject) => {
     const script = document.createElement("script");
     script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`;
     script.async = true;
     script.onload = () => resolve();
+    script.onerror = () => {
+      // Let a later submit try loading it again.
+      scriptPromise = null;
+      script.remove();
+      reject(new Error("reCAPTCHA failed to load."));
+    };
     document.body.appendChild(script);
   });
 
@@ -29,17 +38,33 @@ function loadRecaptchaScript(): Promise<void> {
 
 /** Client-side: loads the reCAPTCHA v3 script and returns a fresh token for the given action. */
 export async function getRecaptchaToken(action: string): Promise<string> {
-  await loadRecaptchaScript();
-
-  return new Promise((resolve, reject) => {
-    if (!window.grecaptcha) {
-      reject(new Error("reCAPTCHA failed to load."));
-      return;
-    }
-    window.grecaptcha.ready(() => {
-      window.grecaptcha!.execute(RECAPTCHA_SITE_KEY, { action }).then(resolve, reject);
-    });
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_, reject) => {
+    timer = setTimeout(
+      () => reject(new Error("Couldn't verify the form submission. Please try again.")),
+      RECAPTCHA_TIMEOUT_MS
+    );
   });
+
+  const token = (async () => {
+    await loadRecaptchaScript();
+
+    return new Promise<string>((resolve, reject) => {
+      if (!window.grecaptcha) {
+        reject(new Error("reCAPTCHA failed to load."));
+        return;
+      }
+      window.grecaptcha.ready(() => {
+        window.grecaptcha!.execute(RECAPTCHA_SITE_KEY, { action }).then(resolve, reject);
+      });
+    });
+  })();
+
+  try {
+    return await Promise.race([token, timeout]);
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 /**
