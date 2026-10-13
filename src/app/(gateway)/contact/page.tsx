@@ -9,10 +9,18 @@ export const metadata: Metadata = {
   description: "Start a project with Channel Partners or find an office near you.",
 };
 
-export default function ContactPage() {
+export default async function ContactPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  // Pillar pages link here with ?source=<pillar> or ?source=<pillar>-<solution>
+  // so the form can skip the choices already made (see StartProjectForm).
+  const { source } = await searchParams;
+
   return (
     <>
-      <ContactHero />
+      <ContactHero source={typeof source === "string" ? source : undefined} />
       <FadeIn>
         <ContactLocations />
       </FadeIn>
