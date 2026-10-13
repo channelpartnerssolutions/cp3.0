@@ -223,21 +223,6 @@ export function SolutionsCarousel() {
       {/* Same 12-column grid as the rest of the site: image cols 2–5, text cols 7–11,
           so the block is centered with one empty column at each side. Stacked below xl. */}
       <div className="relative mx-auto grid w-full max-w-[var(--grid-max-width)] grid-cols-12 items-start gap-x-6 gap-y-12 px-[var(--grid-margin)] md:px-[var(--grid-margin-md)]">
-        <button
-          type="button"
-          aria-label="Previous solution"
-          onClick={() => go(-1)}
-          className="absolute left-[20px] top-1/2 hidden -translate-y-1/2 opacity-35 transition-opacity hover:opacity-100 md:block"
-        >
-          <Image
-            src={`${ICON_DIR}/swiper-arrow-prev.svg`}
-            alt=""
-            width={23}
-            height={44}
-            unoptimized
-          />
-        </button>
-
         <div className="relative col-span-12 mx-auto w-full max-w-[460px] xl:col-span-4 xl:col-start-2 xl:max-w-none">
           <div className="absolute -left-6 -top-6 h-full w-full rounded bg-cerulean" aria-hidden />
           <div
@@ -323,20 +308,44 @@ export function SolutionsCarousel() {
           </div>
         </div>
 
-        <button
-          type="button"
-          aria-label="Next solution"
-          onClick={() => go(1)}
-          className="absolute right-[20px] top-1/2 hidden -translate-y-1/2 opacity-35 transition-opacity hover:opacity-100 md:block"
-        >
-          <Image
-            src={`${ICON_DIR}/swiper-arrow-next.svg`}
-            alt=""
-            width={23}
-            height={44}
-            unoptimized
+        {/* Arrow layer: repeats the grid with an invisible stand-in for the photo
+            (same columns and aspect ratio), so the arrows center on the photo
+            instead of on the whole block, whose height changes with each
+            slide's text. */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 hidden grid-cols-12 gap-x-6 px-[var(--grid-margin)] md:grid md:px-[var(--grid-margin-md)]">
+          <div
+            className="col-span-12 mx-auto aspect-[558/685] w-full max-w-[460px] xl:col-span-4 xl:col-start-2 xl:max-w-none"
+            aria-hidden
           />
-        </button>
+          <button
+            type="button"
+            aria-label="Previous solution"
+            onClick={() => go(-1)}
+            className="pointer-events-auto absolute left-[20px] top-1/2 -translate-y-1/2 opacity-35 transition-opacity hover:opacity-100"
+          >
+            <Image
+              src={`${ICON_DIR}/swiper-arrow-prev.svg`}
+              alt=""
+              width={23}
+              height={44}
+              unoptimized
+            />
+          </button>
+          <button
+            type="button"
+            aria-label="Next solution"
+            onClick={() => go(1)}
+            className="pointer-events-auto absolute right-[20px] top-1/2 -translate-y-1/2 opacity-35 transition-opacity hover:opacity-100"
+          >
+            <Image
+              src={`${ICON_DIR}/swiper-arrow-next.svg`}
+              alt=""
+              width={23}
+              height={44}
+              unoptimized
+            />
+          </button>
+        </div>
       </div>
 
       <div className="mt-8 flex justify-center gap-2 md:hidden">
