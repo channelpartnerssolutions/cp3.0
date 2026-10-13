@@ -13,8 +13,15 @@ type ConsentWindow = Window & {
   gtag?: (...args: unknown[]) => void;
 };
 
+// Global Privacy Control: a browser-level "don't sell or share my data"
+// signal that California law requires honoring. Ad pixels count as sharing.
+function hasGlobalPrivacyControl(): boolean {
+  return (navigator as Navigator & { globalPrivacyControl?: boolean }).globalPrivacyControl === true;
+}
+
 // Ad pixels mount only after the visitor accepts advertising cookies in the
-// HubSpot cookie banner. Revoking consent takes effect on the next page load.
+// HubSpot cookie banner, and never when the browser sends Global Privacy
+// Control. Revoking consent takes effect on the next page load.
 export function ConsentGatedPixels() {
   const [consent, setConsent] = useState({ analytics: false, advertisement: false });
 
@@ -25,7 +32,9 @@ export function ConsentGatedPixels() {
       "addPrivacyConsentListener",
       (hsConsent: HubSpotConsent) => {
         const analytics = Boolean(hsConsent.allowed || hsConsent.categories?.analytics);
-        const advertisement = Boolean(hsConsent.allowed || hsConsent.categories?.advertisement);
+        const advertisement =
+          !hasGlobalPrivacyControl() &&
+          Boolean(hsConsent.allowed || hsConsent.categories?.advertisement);
         setConsent({ analytics, advertisement });
 
         const ads = advertisement ? "granted" : "denied";

@@ -2,7 +2,10 @@ import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { pillars } from "@/lib/pillars";
 import { OFFICE_LOCATIONS } from "@/lib/locations";
-import { SOCIAL_LINKS } from "./SocialIcons";
+import { PRIVACY_POLICY_URL, TERMS_URL } from "@/lib/legal";
+import { CookieSettingsButton } from "./CookieSettingsButton";
+import { VerifyBadge } from "@/components/ui/ContentPlaceholder";
+import { SOCIAL_NETWORKS } from "./SocialIcons";
 
 const companyLinks = [
   { href: "/about", label: "Who We Are" },
@@ -13,8 +16,8 @@ const companyLinks = [
 
 // TODO(content): add URLs. Links with an empty href are not rendered.
 const legalLinks = [
-  { href: "", label: "Privacy" },
-  { href: "", label: "Terms" },
+  { href: PRIVACY_POLICY_URL, label: "Privacy" },
+  { href: TERMS_URL, label: "Terms" },
   { href: "", label: "Sitemap" },
 ].filter((link) => link.href);
 
@@ -58,7 +61,30 @@ export function Footer() {
               </Link>
             ))}
           </div>
-          <div className="hidden sm:block" aria-hidden />
+          <div className="flex flex-col items-start gap-2">
+            <span className="text-xs font-bold uppercase tracking-[0.6px] text-white/50">
+              Social
+            </span>
+            {SOCIAL_NETWORKS.map(({ label, href }) =>
+              href ? (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-base underline underline-offset-4 hover:text-cerulean"
+                >
+                  {label}
+                </a>
+              ) : (
+                // TODO(content): profile URL pending — set it in SocialIcons.tsx.
+                <span key={label} className="flex flex-wrap items-center gap-2 text-base">
+                  {label}
+                  <VerifyBadge owner="Marketing" note={`Add the ${label} profile URL`} />
+                </span>
+              )
+            )}
+          </div>
 
           {OFFICE_LOCATIONS.map((location) => {
             const address = location.lines.join(", ");
@@ -85,20 +111,6 @@ export function Footer() {
       </Container>
 
       <Container className="mt-16 grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-12">
-        <div className="flex items-center gap-4 lg:col-span-5">
-          {SOCIAL_LINKS.map(({ label, href, Icon }) => (
-            <a
-              key={label}
-              href={href}
-              aria-label={label}
-              target="_blank"
-              rel="noreferrer"
-              className="text-white/70 hover:text-cerulean"
-            >
-              <Icon className="size-5" />
-            </a>
-          ))}
-        </div>
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-white/50 lg:col-span-7 lg:col-start-6">
           <p>© {new Date().getFullYear()} Channel Partners. All rights reserved.</p>
           {legalLinks.map((link) => (
@@ -106,6 +118,7 @@ export function Footer() {
               {link.label}
             </a>
           ))}
+          <CookieSettingsButton className="hover:text-cerulean" />
         </div>
       </Container>
     </footer>

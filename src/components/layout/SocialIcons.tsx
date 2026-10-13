@@ -32,12 +32,13 @@ function FacebookIcon({ className }: IconProps) {
   );
 }
 
-// TODO(content): add profile URLs. Links with an empty href are not rendered.
 const ALL_SOCIAL_LINKS = [
-  { label: "LinkedIn", href: "", Icon: LinkedInIcon },
-  { label: "Instagram", href: "", Icon: InstagramIcon },
-  { label: "YouTube", href: "", Icon: YouTubeIcon },
-  { label: "Facebook", href: "", Icon: FacebookIcon },
+  { label: "LinkedIn", href: "https://www.linkedin.com/company/channelpartners", Icon: LinkedInIcon },
+  { label: "Instagram", href: "https://www.instagram.com/channelpartnerssolutions/", Icon: InstagramIcon },
+  { label: "YouTube", href: "https://www.youtube.com/@ChannelPartnersSolutions", Icon: YouTubeIcon },
+  { label: "Facebook", href: "https://www.facebook.com/WeAreChannelPartners", Icon: FacebookIcon },
 ];
 
-export const SOCIAL_LINKS = ALL_SOCIAL_LINKS.filter((link) => link.href);
+// The footer's Social column flags any network whose href is emptied with a
+// "Verify with Marketing" badge; the mobile menu just skips it.
+export const SOCIAL_NETWORKS = ALL_SOCIAL_LINKS;
