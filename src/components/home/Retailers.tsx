@@ -50,7 +50,7 @@ export function Retailers() {
   return (
     <section className="w-full bg-white pt-[88px] pb-[110px]">
       <Container className="flex flex-col items-start gap-4">
-        <h2 className="header-3 text-black">
+        <h2 className="max-w-[747px] header-3 text-black">
           Your Trusted Partner Across Retailers Nationwide
         </h2>
         <p className="max-w-[747px] text-base leading-6 text-black">

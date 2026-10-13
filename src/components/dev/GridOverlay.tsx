@@ -7,7 +7,8 @@ export function GridOverlay() {
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
-      if (e.key.toLowerCase() !== "g" || e.metaKey || e.ctrlKey || e.altKey) return;
+      // Browser autofill fires keydown events with no `key`, so guard it.
+      if (e.key?.toLowerCase() !== "g" || e.metaKey || e.ctrlKey || e.altKey) return;
       const target = e.target as HTMLElement;
       if (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable) return;
       setVisible((v) => !v);
