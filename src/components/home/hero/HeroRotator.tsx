@@ -19,7 +19,10 @@ const CAPTIONS: Array<{ href: string; text: string } | null> = [
   null,
   { href: "/retail-execution", text: "Retail Execution: Samsung Assisted Selling Program" },
   { href: "/experiential-marketing", text: "Experiential Marketing: Microsoft Advertising Accelerate" },
-  { href: "/training-enablement", text: "Training & Enablement: Meta Global Training Event" },
+  {
+    href: "/training-enablement/case-studies/meta-global-training-event",
+    text: "Training & Enablement: Meta Global Training Event",
+  },
 ];
 
 const BACKGROUNDS = [
