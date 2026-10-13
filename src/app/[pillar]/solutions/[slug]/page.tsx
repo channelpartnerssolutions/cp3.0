@@ -1,9 +1,14 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getPillar } from "@/lib/pillars";
+import { getPillar, pillars } from "@/lib/pillars";
+import { getSolutionContent } from "@/lib/solutions";
+import { SolutionPage } from "@/components/solutions/SolutionPage";
 import { StubPage } from "@/components/ui/StubPage";
 
-// TODO(content): final page descriptions
+export function generateStaticParams() {
+  return pillars.flatMap((p) => p.solutions.map((s) => ({ pillar: p.slug, slug: s.slug })));
+}
+
 export async function generateMetadata({
   params,
 }: PageProps<"/[pillar]/solutions/[slug]">): Promise<Metadata> {
@@ -11,10 +16,13 @@ export async function generateMetadata({
   const pillar = getPillar(pillarSlug);
   const solution = pillar?.solutions.find((s) => s.slug === slug);
   if (!pillar || !solution) return {};
+  const content = getSolutionContent(pillar.slug, slug);
+  if (content) return content.meta;
+  // TODO(content): final page descriptions for solutions without content yet
   return { title: solution.label, description: `${solution.label} from Channel Partners ${pillar.label}.` };
 }
 
-export default async function SolutionPage({
+export default async function SolutionRoute({
   params,
 }: {
   params: Promise<{ pillar: string; slug: string }>;
@@ -23,6 +31,9 @@ export default async function SolutionPage({
   const pillar = getPillar(pillarSlug);
   const solution = pillar?.solutions.find((s) => s.slug === slug);
   if (!pillar || !solution) notFound();
+
+  const content = getSolutionContent(pillar.slug, slug);
+  if (content) return <SolutionPage content={content} pillar={pillar} />;
 
   return (
     <StubPage

@@ -30,6 +30,19 @@ const nextConfig: NextConfig = {
         destination: "/:pillar",
         permanent: true,
       },
+      // Old WordPress solution URLs on channelpartners.com.
+      ...Object.entries({
+        "audits-and-compliance-services": "audits-compliance",
+        "assisted-sales-and-training": "assisted-sales-training",
+        construction: "construction",
+        merchandising: "merchandising",
+        "break-fix-and-continuity": "break-fix",
+        "warehousing-fulfillment-and-logistics": "warehousing-fulfillment-logistics",
+      }).map(([oldSlug, slug]) => ({
+        source: `/solutions/${oldSlug}`,
+        destination: `/retail-execution/solutions/${slug}`,
+        permanent: true,
+      })),
     ];
   },
 };

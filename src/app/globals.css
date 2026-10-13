@@ -14,6 +14,9 @@
   --color-light-grey: #eaeaea;
   --color-placeholder-grey: #d9d9d9;
   --color-accent-green: #02b391;
+  --color-off-white: #fafafa; /* light section and card backgrounds */
+  --color-mist: #dbe3e5; /* card borders and rules */
+  --color-slate: #41494d; /* secondary body text on white */
 
   /* Spacing scale — CP Brand Library */
   --spacing-8: 8px;
@@ -54,6 +57,9 @@
   --color-light-grey: var(--color-light-grey);
   --color-placeholder-grey: var(--color-placeholder-grey);
   --color-accent-green: var(--color-accent-green);
+  --color-off-white: var(--color-off-white);
+  --color-mist: var(--color-mist);
+  --color-slate: var(--color-slate);
   --font-sans: var(--font-open-sans);
   --font-heading: var(--font-heading);
   --font-display: var(--font-display);
