@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
+import { CaseStudyTile } from "@/components/case-studies/CaseStudyTile";
 import { Button } from "@/components/ui/Button";
+import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Container } from "@/components/ui/Container";
 import { caseStudiesFor } from "@/lib/case-studies";
 import { getPillar } from "@/lib/pillars";
@@ -36,37 +36,15 @@ export default async function CaseStudiesIndex({
       <Container className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12 flex flex-col gap-12 min-[1610px]:col-span-10 min-[1610px]:col-start-2">
           <div className="flex flex-col items-start gap-4">
-            <p className="text-xs font-bold uppercase tracking-[0.6px] text-middle-grey">
-              {pillar.label}
-            </p>
+            <Eyebrow>Our work</Eyebrow>
             <h1 className="header-1 text-black">case studies</h1>
           </div>
 
           {studies.length > 0 ? (
-            <ul className="grid grid-cols-1 gap-x-6 gap-y-12 md:grid-cols-2 lg:grid-cols-3">
+            <ul className="flex flex-col gap-16 md:gap-20">
               {studies.map((study) => (
                 <li key={study.slug}>
-                  <Link
-                    href={`/${pillar.slug}/case-studies/${study.slug}`}
-                    className="group flex flex-col gap-4"
-                  >
-                    <div className="relative aspect-[3/2] overflow-hidden rounded-lg">
-                      <Image
-                        src={study.image.src}
-                        alt=""
-                        fill
-                        sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <p className="text-xs font-bold uppercase tracking-[0.6px] text-middle-grey">
-                        {study.client}
-                      </p>
-                      <h2 className="header-6 text-black group-hover:text-cerulean">{study.title}</h2>
-                      <p className="text-base leading-6 text-black">{study.summary}</p>
-                    </div>
-                  </Link>
+                  <CaseStudyTile study={study} />
                 </li>
               ))}
             </ul>

@@ -17,16 +17,27 @@ export type Job = {
 export const ICIMS_SEARCH_URL =
   "https://careers-channelpartners.icims.com/jobs/search?ss=1&searchRelation=keyword_all";
 
+// Same names and order as the Category filter on the iCIMS careers portal.
 export const CATEGORIES = [
-  "Display Maintenance",
+  "Assisted Selling",
   "Corporate",
-  "Retail Merchandising",
+  "Display Maintenance",
+  "Experiential & Events",
+  "Field Team Management",
   "Installation",
   "Retail Associates",
+  "Retail Merchandising",
   "Training & Market Development Managers",
-  "Field Team Management",
-  "Assisted Selling",
 ] as const;
+
+// The filter's category options: the iCIMS list plus any other category the
+// feed sends (e.g. one added there later), so it's never unfilterable.
+export function categoryOptions(jobs: Job[]): string[] {
+  const extra = new Set(
+    jobs.map((job) => job.category).filter((c) => c && !(CATEGORIES as readonly string[]).includes(c))
+  );
+  return [...CATEGORIES, ...extra].sort();
+}
 
 export const POSITION_TYPES = ["Temporary", "Full-Time", "Part-Time"] as const;
 

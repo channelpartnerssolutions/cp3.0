@@ -1,17 +1,11 @@
 import type { Metadata } from "next";
-import { StubPage } from "@/components/ui/StubPage";
+import { RetailerPage } from "@/components/retailers/RetailerPage";
+import { getRetailerPage } from "@/lib/retailers";
 
-// TODO(content): final page title, description and body
-export const metadata: Metadata = {
-  title: "Target Preferred Merchandising Partner",
-  description: "Channel Partners is a preferred merchandising partner for Target.",
-};
+const content = getRetailerPage("target")!;
 
-export default function TargetCredentialPage() {
-  return (
-    <StubPage
-      title="Target Preferred Merchandising Partner"
-      description="Retail credential page — placeholder for this pass."
-    />
-  );
+export const metadata: Metadata = content.meta;
+
+export default function TargetPage() {
+  return <RetailerPage content={content} />;
 }

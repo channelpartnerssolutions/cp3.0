@@ -224,10 +224,10 @@ export function SolutionsCarousel() {
           so the block is centered with one empty column at each side. Stacked below xl. */}
       <div className="relative mx-auto grid w-full max-w-[var(--grid-max-width)] grid-cols-12 items-start gap-x-6 gap-y-12 px-[var(--grid-margin)] md:px-[var(--grid-margin-md)]">
         <div className="relative col-span-12 mx-auto w-full max-w-[460px] xl:col-span-4 xl:col-start-2 xl:max-w-none">
-          <div className="absolute -left-6 -top-6 h-full w-full rounded bg-cerulean" aria-hidden />
+          <div className="absolute -left-6 -top-6 h-full w-full rounded-lg bg-cerulean" aria-hidden />
           <div
             key={index}
-            className={`relative aspect-[558/685] w-full overflow-hidden rounded ${
+            className={`relative aspect-[558/685] w-full overflow-hidden rounded-lg ${
               direction ? "carousel-photo-in" : ""
             }`}
             style={{ "--slide-from": `${direction * 48}px` } as CSSProperties}

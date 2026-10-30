@@ -20,7 +20,7 @@ const partnerPhotos: PartnerPhoto[] = [
     caption: "Approved 3PL Provider",
     // TODO(content): confirm wording
     credentialNote: "Approved provider for Best Buy U.S. and Canada",
-    href: "/best-buy-approved-3pl-provider",
+    href: "/best-buy",
     image: "/images/homepage/retailers/bestbuy.png",
     // TODO(content): confirm image descriptions
     imageAlt: "Channel Partners merchandiser at a Best Buy store",

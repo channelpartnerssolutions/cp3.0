@@ -4,7 +4,7 @@ import { Container } from "@/components/ui/Container";
 import { EmployeeSupportLink } from "./EmployeeSupport";
 import { StartProjectForm } from "./StartProjectForm";
 
-export function ContactHero({ source }: { source?: string }) {
+export function ContactHero({ source, initialMessage }: { source?: string; initialMessage?: string }) {
   return (
     <section className="relative w-full bg-white">
       <Container className="grid grid-cols-12 gap-x-6">
@@ -18,7 +18,7 @@ export function ContactHero({ source }: { source?: string }) {
               </p>
             </div>
             <div className="w-full">
-              <StartProjectForm initialSource={source} />
+              <StartProjectForm initialSource={source} initialMessage={initialMessage} />
             </div>
             <div className="flex flex-wrap items-start gap-x-20 gap-y-8">
               <div className="flex flex-col items-start gap-2">

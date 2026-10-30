@@ -4,8 +4,7 @@ import { CountUp } from "@/components/ui/CountUp";
 // printed under the row.
 export type Stat = { value: string; label: string; hidden?: boolean; footnote?: string };
 
-// Dark-blue row of count-up numbers, used by the homepage proof points and
-// case study pages.
+// Dark-blue row of count-up numbers, used by the homepage proof points.
 export function StatsStrip({ stats }: { stats: Stat[] }) {
   const visible = stats.filter((stat) => !stat.hidden);
   const footnotes = visible.filter((stat) => stat.footnote);
@@ -16,7 +15,7 @@ export function StatsStrip({ stats }: { stats: Stat[] }) {
         {visible.map((stat) => (
           <div key={stat.label} className="flex flex-col items-center gap-2">
             <CountUp value={stat.value} className="font-display text-6xl italic md:text-8xl" />
-            <p className="max-w-[190px] text-base leading-8">
+            <p className="max-w-[190px] text-base leading-6">
               {stat.label}
               {stat.footnote && "*"}
             </p>

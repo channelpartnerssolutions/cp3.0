@@ -1,8 +1,7 @@
 import { StatsStrip, type Stat } from "@/components/ui/StatsStrip";
 
 const stats: Stat[] = [
-  // TODO(content): real number — left visible on purpose as a reminder
-  { value: "00", label: "Years experience in the field" },
+  { value: "40+", label: "Years experience in the field" },
   { value: "100%", label: "W-2 employees utilized" },
   { value: "53", label: "Countries reached globally" },
   // 2025 total. No thousands comma: CountUp animates only the first run of

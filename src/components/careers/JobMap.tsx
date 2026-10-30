@@ -8,9 +8,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { CircleMarker, Map as LeafletMap, LayerGroup, Marker, Path } from "leaflet";
 import { Container } from "@/components/ui/Container";
 import {
-  CATEGORIES,
   ICIMS_SEARCH_URL,
   POSITION_TYPES,
+  categoryOptions,
   US_STATE_ABBR,
   formatPayRange,
   type Job,
@@ -41,6 +41,15 @@ const STATE_OUTLINES_INERT_ZOOM = 7;
 
 // Sentinel value for the "Use Current Location" option in the location dropdown.
 const CURRENT_LOCATION = "__current__";
+
+// Query parameters that carry the filters, so a filtered map can be shared as a
+// link (e.g. /careers?q=merchandiser&state=FL#open-positions).
+const FILTER_PARAMS = {
+  keyword: "q",
+  category: "category",
+  positionType: "type",
+  state: "state",
+} as const;
 
 function haversineMiles(a: [number, number], b: [number, number]): number {
   const R = 3958.8;
@@ -125,6 +134,54 @@ export function JobMap({ jobs }: { jobs: Job[] }) {
     jobsRef.current = jobs;
   }, [jobs]);
 
+  // Start from any filters in a shared link. Read after mount rather than on the
+  // server so the careers page stays cached. Runs before the map is built, so a
+  // shared link is never recentered on the visitor's own location.
+  const [urlFiltersRead, setUrlFiltersRead] = useState(false);
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const pick = (key: string, allowed: readonly string[]) => {
+      const value = params.get(key) ?? "";
+      return allowed.includes(value) ? value : "";
+    };
+    const q = (params.get(FILTER_PARAMS.keyword) ?? "").trim().slice(0, 100);
+    const c = pick(FILTER_PARAMS.category, categoryOptions(jobsRef.current));
+    const t = pick(FILTER_PARAMS.positionType, POSITION_TYPES);
+    const st = pick(FILTER_PARAMS.state, jobsRef.current.map((job) => job.state));
+    if (q || c || t || st) {
+      autoLocateDismissedRef.current = true;
+      setKeyword(q);
+      setCategory(c);
+      setPositionType(t);
+      setStateFilter(st);
+    }
+    setUrlFiltersRead(true);
+  }, []);
+
+  // Mirror the filters into the address bar so the current view can be copied
+  // and shared. replaceState keeps filter changes out of the Back button
+  // history; the short delay avoids rewriting the URL on every keystroke.
+  useEffect(() => {
+    if (!urlFiltersRead) return;
+    const timer = window.setTimeout(() => {
+      const url = new URL(window.location.href);
+      const values = { keyword: keyword.trim(), category, positionType, state: stateFilter };
+      for (const [name, param] of Object.entries(FILTER_PARAMS)) {
+        const value = values[name as keyof typeof values];
+        if (value) url.searchParams.set(param, value);
+        else url.searchParams.delete(param);
+      }
+      const hasFilter = Object.values(values).some(Boolean);
+      // Land shared links on the map rather than the top of the page.
+      if (hasFilter) url.hash = "open-positions";
+      else if (url.hash === "#open-positions") url.hash = "";
+      if (url.href !== window.location.href) {
+        window.history.replaceState(window.history.state, "", url);
+      }
+    }, 300);
+    return () => window.clearTimeout(timer);
+  }, [urlFiltersRead, keyword, category, positionType, stateFilter]);
+
   const filters = useMemo(
     () => ({ keyword, category, positionType, state: stateFilter }),
     [keyword, category, positionType, stateFilter]
@@ -146,6 +203,8 @@ export function JobMap({ jobs }: { jobs: Job[] }) {
     () => visibleJobs ?? filteredJobs.filter((job) => job.lat != null && job.lng != null),
     [visibleJobs, filteredJobs]
   );
+
+  const availableCategories = useMemo(() => categoryOptions(jobs), [jobs]);
 
   const availableStates = useMemo(() => {
     const set = new Set(jobs.map((job) => job.state).filter(Boolean));
@@ -609,7 +668,7 @@ export function JobMap({ jobs }: { jobs: Job[] }) {
                 className="rounded border border-light-grey px-2 py-2 text-sm text-black"
               >
                 <option value="">All Categories</option>
-                {CATEGORIES.map((c) => (
+                {availableCategories.map((c) => (
                   <option key={c} value={c}>
                     {c}
                   </option>

@@ -49,9 +49,9 @@ export function PersonaSplit() {
               <div className="relative w-full max-w-[559px] shrink-0">
                 <div
                   aria-hidden
-                  className="absolute -bottom-6 -left-6 h-full w-full rounded bg-near-black"
+                  className="absolute -bottom-6 -left-6 h-full w-full rounded-lg bg-near-black"
                 />
-                <div className="relative aspect-[559/699] w-full overflow-hidden rounded">
+                <div className="relative aspect-[559/699] w-full overflow-hidden rounded-lg">
                   <video
                     className="size-full object-cover"
                     src="/videos/experiential/persona-vertical.mp4"

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { caseStudyHref, getCaseStudy, headlineResult } from "@/lib/case-studies";
 
 type CaseStudy = {
   slug: string;
@@ -87,7 +88,23 @@ const SNAP_RATE = 8;
 // Render the case study list 3x so the track can be nudged in either
 // direction indefinitely; the offset wraps by one set's width once it
 // drifts past the middle copy, so the loop never visibly resets.
-const TRACK_ITEMS = [...CASE_STUDIES, ...CASE_STUDIES, ...CASE_STUDIES];
+// Cards with an entry in case-studies.ts take their title, image and first
+// result from it and link to its page; the rest show the fallback copy above
+// and don't link until their case study is written.
+const ITEMS: (CaseStudy & { href?: string })[] = CASE_STUDIES.map((item) => {
+  const study = getCaseStudy("experiential-marketing", item.slug);
+  if (!study) return item;
+  const result = headlineResult(study);
+  return {
+    slug: item.slug,
+    title: study.title,
+    image: study.image.src,
+    stat: result ? { value: result.value, label: result.label } : undefined,
+    href: caseStudyHref(study),
+  };
+});
+
+const TRACK_ITEMS = [...ITEMS, ...ITEMS, ...ITEMS];
 const SET_WIDTH = CASE_STUDIES.length * STEP;
 const EXTRA_WIDTH = ENLARGED_WIDTH - ITEM_WIDTH;
 // Fallback section width for the server render, before it can be measured.
@@ -137,13 +154,15 @@ type CursorMode = "idle" | "left" | "right" | "view";
 type Point = { x: number; y: number };
 
 // Edge zones keep priority so scrolling always works; otherwise the cursor
-// reads "view" while it sits over the active (mostly enlarged) card.
+// reads "view" while it sits over the active (mostly enlarged) card, if that
+// card links to a case study.
 function cursorModeFor(speed: number, pointer: Point | null, layout: CardLayout[]): CursorMode {
   if (speed < 0) return "left";
   if (speed > 0) return "right";
   if (!pointer) return "idle";
   const overActive = layout.some(
-    (card) =>
+    (card, i) =>
+      TRACK_ITEMS[i]?.href !== undefined &&
       card.weight > 0.5 &&
       pointer.x >= card.x &&
       pointer.x <= card.x + card.width &&
@@ -322,7 +341,7 @@ export function FeaturedWorkCarousel() {
                 ref={(el) => {
                   itemRefs.current[i] = el;
                 }}
-                className="absolute left-0 top-0 overflow-hidden rounded"
+                className="absolute left-0 top-0 overflow-hidden rounded-lg"
                 style={{
                   transform: `translate3d(${initial.x}px, ${initial.y}px, 0)`,
                   width: initial.width,
@@ -330,10 +349,7 @@ export function FeaturedWorkCarousel() {
                   willChange: "transform, width, height",
                 }}
               >
-                <Link
-                  href={`/experiential-marketing/case-studies/${item.slug}`}
-                  className="relative block size-full cursor-none"
-                >
+                <CardLink href={item.href}>
                   <Image
                     src={item.image}
                     alt={item.title}
@@ -384,7 +400,7 @@ export function FeaturedWorkCarousel() {
                       </span>
                     </div>
                   )}
-                </Link>
+                </CardLink>
               </div>
             );
           })}
@@ -415,5 +431,17 @@ export function FeaturedWorkCarousel() {
         </div>
       </div>
     </section>
+  );
+}
+
+// The card's link to its case study, or a plain block until one exists.
+function CardLink({ href, children }: { href?: string; children: React.ReactNode }) {
+  const className = "relative block size-full cursor-none";
+  return href ? (
+    <Link href={href} className={className}>
+      {children}
+    </Link>
+  ) : (
+    <div className={className}>{children}</div>
   );
 }

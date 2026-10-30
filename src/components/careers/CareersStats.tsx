@@ -27,7 +27,7 @@ export function CareersStats({ jobs }: { jobs: Job[] }) {
           ) : (
             <CountUp value={stat.value} className={VALUE_CLASS} />
           )}
-          <p className="text-2xl leading-8">{stat.label}</p>
+          <p className="text-2xl leading-7">{stat.label}</p>
         </div>
       ))}
     </section>

@@ -30,6 +30,9 @@ const nextConfig: NextConfig = {
         destination: "/:pillar",
         permanent: true,
       },
+      // The Best Buy page kept the old site's /best-buy URL; this placeholder
+      // address was linked from the new site before that.
+      { source: "/best-buy-approved-3pl-provider", destination: "/best-buy", permanent: true },
       // Old WordPress solution URLs on channelpartners.com.
       ...Object.entries({
         "audits-and-compliance-services": "audits-compliance",

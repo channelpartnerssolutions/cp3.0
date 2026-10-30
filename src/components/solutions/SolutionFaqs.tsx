@@ -14,7 +14,7 @@ export function SolutionFaqs({ faqs }: { faqs: { question: string; answer: strin
   };
 
   return (
-    <section className="w-full bg-white py-20 md:py-24">
+    <section className="w-full bg-white pt-20 pb-24 md:pt-24 md:pb-28">
       <Container>
         <h2 className="header-3 mb-10 text-black max-md:text-[24px]! max-md:leading-8!">
           frequently asked questions

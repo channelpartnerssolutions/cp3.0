@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
+import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Container } from "@/components/ui/Container";
 import { FadeIn } from "@/components/ui/FadeIn";
 import type { PillarConfig } from "@/lib/pillars";
@@ -24,7 +25,7 @@ export function SolutionPage({ content, pillar }: { content: SolutionContent; pi
       >
         <Container className="pt-[calc(var(--pillar-header-height)+48px)] pb-16 md:pb-20">
           <div className="flex max-w-[900px] flex-col items-start gap-4">
-            <p className="header-6 text-white max-md:text-[14px]! max-md:leading-5!">{hero.eyebrow}</p>
+            <Eyebrow>{hero.eyebrow}</Eyebrow>
             <h1 className="header-1 max-w-[720px] text-white max-md:text-[34px]! max-md:leading-[42px]!">
               {hero.title}
             </h1>
@@ -144,7 +145,7 @@ export function SolutionPage({ content, pillar }: { content: SolutionContent; pi
       <section className={`w-full bg-white pt-20 ${caseStudies ? "pb-6" : "pb-20"}`}>
         <Container className="flex flex-col gap-14">
           <div className="flex flex-col gap-4">
-            <p className="header-6 text-cerulean">{process.eyebrow}</p>
+            <Eyebrow>{process.eyebrow}</Eyebrow>
             <Heading heading={process.heading} accent={process.accent} className="text-near-black" />
           </div>
           <div className="flex flex-col gap-6">
@@ -200,7 +201,7 @@ export function SolutionPage({ content, pillar }: { content: SolutionContent; pi
       {worksWith && (
         <section className="w-full bg-white pt-20">
           <Container className="flex flex-col gap-8">
-            <p className="header-6 text-cerulean">Works with</p>
+            <Eyebrow>Works with</Eyebrow>
             <ul className="grid grid-cols-1 gap-6 md:grid-cols-3">
               {worksWith.map((service) => (
                 <li key={service.href}>
@@ -308,7 +309,7 @@ function BulletIconImage({ icon }: { icon?: BulletIcon }) {
 
 function CaseStudyCard({ item }: { item: NonNullable<SolutionContent["caseStudies"]>["items"][number] }) {
   const card = (
-    <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg md:aspect-[4000/2667]">
+    <div className="relative aspect-[3/2] w-full overflow-hidden rounded-lg">
       <Image src={item.image.src} alt={item.image.alt} fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
       <div className="absolute inset-0 flex flex-col justify-between bg-near-black/80 p-6 md:p-8">
         <p className="header-6 max-w-[460px] text-white max-md:text-[15px]! max-md:leading-5!">{item.title}</p>

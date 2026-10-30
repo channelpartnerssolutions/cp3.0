@@ -190,7 +190,15 @@ const SERVICE_STEP = 1;
 const CONTACT_STEP = 2;
 const LAST_STEP = STEPS.length - 1;
 
-export function StartProjectForm({ initialSource }: { initialSource?: string }) {
+export function StartProjectForm({
+  initialSource,
+  initialMessage,
+}: {
+  initialSource?: string;
+  // Pre-filled, editable start of the message (e.g. the format picked on an
+  // experiential solution page).
+  initialMessage?: string;
+}) {
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
@@ -208,7 +216,12 @@ export function StartProjectForm({ initialSource }: { initialSource?: string }) 
   // step's first field so keyboard and screen-reader users land in place.
   useEffect(() => {
     if (!movedRef.current) return;
-    stepRefs.current[step]?.querySelector<HTMLElement>("input, select, textarea, button")?.focus();
+    const field = stepRefs.current[step]?.querySelector<HTMLElement>("input, select, textarea, button");
+    field?.focus();
+    // A pre-filled message gets the caret after its text, ready to keep typing.
+    if (field instanceof HTMLTextAreaElement) {
+      field.setSelectionRange(field.value.length, field.value.length);
+    }
   }, [step]);
 
   function clearFieldError(field: keyof FieldErrors) {
@@ -512,6 +525,7 @@ export function StartProjectForm({ initialSource }: { initialSource?: string }) 
           <textarea
             id="message"
             name="message"
+            defaultValue={initialMessage}
             rows={3}
             maxLength={MESSAGE_MAX_LENGTH}
             className={`${inputClasses} resize-y`}

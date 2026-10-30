@@ -40,7 +40,7 @@ export function ThoughtLeadership() {
         {PLACEHOLDER_POSTS.map((post) => (
           <article
             key={post.slug}
-            className="overflow-hidden rounded bg-white shadow-[0_0_20px_rgba(0,0,0,0.25)]"
+            className="overflow-hidden rounded-lg bg-white shadow-[0_0_20px_rgba(0,0,0,0.25)]"
           >
             <div className="relative aspect-[676/308] w-full overflow-hidden">
               <Image

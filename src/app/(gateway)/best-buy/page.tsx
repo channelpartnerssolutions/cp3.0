@@ -1,17 +1,13 @@
 import type { Metadata } from "next";
-import { StubPage } from "@/components/ui/StubPage";
+import { RetailerPage } from "@/components/retailers/RetailerPage";
+import { getRetailerPage } from "@/lib/retailers";
 
-// TODO(content): final page title, description and body
-export const metadata: Metadata = {
-  title: "Best Buy Approved 3PL Provider",
-  description: "Channel Partners is an approved 3PL provider for Best Buy U.S. and Canada.",
-};
+// Keeps the old site's /best-buy URL so search results and Best Buy portal
+// links still land here.
+const content = getRetailerPage("best-buy")!;
 
-export default function BestBuyCredentialPage() {
-  return (
-    <StubPage
-      title="Best Buy Approved 3PL Provider"
-      description="Retail credential page — placeholder for this pass."
-    />
-  );
+export const metadata: Metadata = content.meta;
+
+export default function BestBuyPage() {
+  return <RetailerPage content={content} />;
 }

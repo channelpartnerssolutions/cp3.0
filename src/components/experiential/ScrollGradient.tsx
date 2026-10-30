@@ -3,7 +3,9 @@
 import { useEffect, useRef } from "react";
 
 // Keyframes for each blob, spread evenly across the page's scroll range:
-// [x vw, y vh, scaleX, scaleY, rotation deg, opacity, color].
+// [x vw, y vh, scaleX, scaleY, rotation deg, opacity, color]. The first five
+// build to the peak at the halfway point; the rest hold that intensity and
+// just drift, morph and trade colors for the second half of the page.
 type Keyframe = [number, number, number, number, number, number, string];
 
 const KEYFRAMES: Keyframe[][] = [
@@ -12,6 +14,10 @@ const KEYFRAMES: Keyframe[][] = [
   [[-6, -24, 0.7, 1.3, 35, 0.8, "#186188"], [-26, -6, 1.1, 0.6, -15, 0.55, "#0275b3"], [-10, -12, 0.8, 0.9, 20, 0.6, "#02b391"]],
   [[-30, -18, 1.4, 0.9, -35, 0.9, "#0275b3"], [-8, -30, 0.7, 1.2, 50, 0.7, "#02b391"], [-20, -4, 1.1, 0.5, -10, 0.45, "#186188"]],
   [[-22, -26, 1.7, 1.4, 10, 1, "#186188"], [-34, -12, 1.2, 1, -40, 0.75, "#02b391"], [-12, -34, 1, 1.3, 60, 0.7, "#0275b3"]],
+  [[-30, -14, 1.5, 1.2, -15, 0.95, "#0275b3"], [-20, -28, 1.1, 1.2, 20, 0.8, "#186188"], [-26, -20, 1.1, 1, 30, 0.7, "#02b391"]],
+  [[-18, -30, 1.6, 1.3, 40, 0.95, "#186188"], [-36, -8, 1.3, 0.9, -25, 0.75, "#0275b3"], [-8, -26, 1.1, 1.2, -20, 0.7, "#02b391"]],
+  [[-28, -20, 1.5, 1.5, -10, 1, "#0275b3"], [-14, -34, 1, 1.3, 55, 0.8, "#02b391"], [-30, -10, 1.2, 0.8, 15, 0.65, "#186188"]],
+  [[-20, -24, 1.7, 1.4, 15, 1, "#186188"], [-30, -16, 1.2, 1.1, -35, 0.75, "#02b391"], [-16, -30, 1, 1.2, 45, 0.7, "#0275b3"]],
 ];
 
 // Blob diameters, anchored on the viewport's bottom-right corner.
@@ -35,8 +41,9 @@ function mixRgb(a: string, b: string, t: number) {
   return A.map((v, i) => Math.round(v + (B[i] - v) * t)).join(",");
 }
 
-// Fixed, grain-textured gradient behind the page: three soft blobs drift,
-// morph and shift color as the page scrolls from top to bottom.
+// Fixed, grain-textured gradient behind the page: three soft blobs grow to
+// full strength by the page's midpoint, then keep drifting, morphing and
+// shifting color through the rest of the scroll.
 export function ScrollGradient() {
   const blobRefs = useRef<Array<HTMLDivElement | null>>([]);
   const grainRef = useRef<HTMLDivElement>(null);

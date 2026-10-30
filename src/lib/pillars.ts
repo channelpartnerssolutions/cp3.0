@@ -14,6 +14,8 @@ export type PillarConfig = {
   taglineLines: [string, string];
   description: string;
   accentColor: string;
+  // Light or dark body sections on the pillar's case study pages.
+  surface: "light" | "dark";
   image: string;
   solutions: Solution[];
 };
@@ -30,6 +32,7 @@ export const pillars: PillarConfig[] = [
     description:
       "Whether you're an established brand or trying to find your audience the sales floor is the frontlines of imprinting your story in the minds of your customer.",
     accentColor: "var(--color-cerulean)",
+    surface: "light",
     image: "/images/homepage/pillar-photo-retail.png",
     solutions: [
       { slug: "audits-compliance", label: "Audits & Compliance", icon: "/images/homepage/icon-audits-compliance.png" },
@@ -51,6 +54,7 @@ export const pillars: PillarConfig[] = [
     description:
       "Your brand strategy is only as good as the weakest point in the delivery chain, we turn your brand knowledge into a scalable system of learning, turning employees into brand champions.",
     accentColor: "var(--color-cerulean)",
+    surface: "light",
     image: "/images/homepage/pillar-photo-training.png",
     solutions: [
       { slug: "curriculum-program-design", label: "Curriculum & Program Design", icon: "/images/homepage/icon-curriculum-program-design.png" },
@@ -70,6 +74,7 @@ export const pillars: PillarConfig[] = [
     description:
       "We take your message direct to your audience, from employee and corporate brand experiences to creative, in-person brand takeovers, we take your brand from the boardroom to the street.",
     accentColor: "var(--color-cerulean)",
+    surface: "dark",
     image: "/images/homepage/pillar-photo-experiential.png",
     solutions: [
       { slug: "brand-activations", label: "Brand Activations", icon: "/images/homepage/icon-experiential-marketing.png" },

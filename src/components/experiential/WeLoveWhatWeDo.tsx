@@ -5,6 +5,9 @@ import { Button } from "@/components/ui/Button";
 
 type Slot = {
   slug: string;
+  // Experiential solution in `pillars.ts` the CTA preselects on the contact
+  // form. Slides without a solution of their own borrow the closest one.
+  solution: string;
   eyebrow: string;
   description: string;
   capabilities: string;
@@ -14,6 +17,7 @@ type Slot = {
 const SLOTS: Slot[] = [
   {
     slug: "brand-activations",
+    solution: "brand-activations",
     eyebrow: "Activations & Launches",
     description:
       "Pop-up shops, immersive brand activations, mobile tours, publicity stunts, and product launches, built to turn a strategy into something people can walk into, touch, and talk about.",
@@ -23,6 +27,7 @@ const SLOTS: Slot[] = [
   },
   {
     slug: "conferences-b2b-events",
+    solution: "conferences-b2b-events",
     eyebrow: "Conferences & B2B Experiences",
     description:
       "From exhibit and booth design to full-scale conference production, we build the environments where business happens: trade shows, corporate award shows, and incentive trips that make recognition feel earned.",
@@ -32,6 +37,7 @@ const SLOTS: Slot[] = [
   },
   {
     slug: "virtual-hybrid-experiences",
+    solution: "conferences-b2b-events",
     eyebrow: "Virtual & Hybrid Experiences",
     description:
       "Global conferences, interactive trainings, and custom event sites that extend a live moment beyond the room, built for scale, not just streamed.",
@@ -41,6 +47,7 @@ const SLOTS: Slot[] = [
   },
   {
     slug: "employee-engagement",
+    solution: "employee-engagement",
     eyebrow: "Employee Engagement",
     description:
       "Rallies, town halls, offsites, onboarding, and culture initiatives designed around the moments that shape how people feel about the organizations they work for.",
@@ -50,6 +57,7 @@ const SLOTS: Slot[] = [
   },
   {
     slug: "product-launches",
+    solution: "brand-activations",
     eyebrow: "Product Launches",
     description:
       "Reveal events, press days, and retail-ready launch moments that carry a product's story from the boardroom onto the floor.",
@@ -59,6 +67,7 @@ const SLOTS: Slot[] = [
   },
   {
     slug: "culture-recognition",
+    solution: "employee-engagement",
     eyebrow: "Culture & Recognition",
     description:
       "Award shows, milestone celebrations, and recognition programs built to make people feel seen by the organizations they help build.",
@@ -120,7 +129,7 @@ export function WeLoveWhatWeDo() {
                 ref={(el) => {
                   videoRefs.current[i] = el;
                 }}
-                className="relative aspect-[559/699] w-full overflow-hidden rounded"
+                className="relative aspect-[559/699] w-full overflow-hidden rounded-lg"
               >
                 <video
                   className="size-full object-cover"
@@ -153,7 +162,7 @@ export function WeLoveWhatWeDo() {
                 {active.capabilities}
               </p>
               <Button
-                href={`/contact?source=experiential-marketing-${active.slug}`}
+                href={`/contact?source=experiential-marketing-${active.solution}`}
                 variant="outline-light"
               >
                 {active.ctaLabel}

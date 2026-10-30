@@ -1,47 +1,14 @@
-"use client";
-
-import { useEffect, useRef, useState } from "react";
 import type { PillarConfig } from "@/lib/pillars";
+import { HeroVideo } from "@/components/ui/HeroVideo";
 
 export function Hero({ pillar }: { pillar: PillarConfig }) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [reducedMotion, setReducedMotion] = useState(
-    () =>
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches
-  );
-
-  useEffect(() => {
-    const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const onChange = () => setReducedMotion(mql.matches);
-    mql.addEventListener("change", onChange);
-    return () => mql.removeEventListener("change", onChange);
-  }, []);
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-    if (reducedMotion) {
-      video.pause();
-    } else {
-      video.play().catch(() => {});
-    }
-  }, [reducedMotion]);
-
   return (
     <section
       className="relative -mt-[var(--pillar-header-height)] flex h-[600px] flex-col items-center justify-end overflow-hidden bg-near-black md:h-screen md:min-h-[600px]"
     >
-      <video
-        ref={videoRef}
-        className="absolute inset-0 size-full object-cover"
-        src="/videos/experiential/hero-sizzle.mp4"
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="metadata"
-      />
+      <HeroVideo src="/videos/experiential/hero-sizzle.mp4" />
+      {/* Full dark wash so the overlaid nav stays legible over bright footage. */}
+      <div className="absolute inset-0 bg-near-black/75" />
       <div className="absolute inset-0 bg-gradient-to-t from-near-black/80 via-near-black/20 to-transparent" />
 
       <div className="relative z-10 mx-auto flex w-full max-w-[var(--grid-max-width)] flex-col items-start gap-6 px-[var(--grid-margin)] pb-20 md:px-[var(--grid-margin-md)] md:pb-28">

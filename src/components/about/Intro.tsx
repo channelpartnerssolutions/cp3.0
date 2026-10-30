@@ -17,8 +17,8 @@ export function Intro() {
       <Container>
         <div className="relative aspect-[1376/588] w-full overflow-hidden rounded-lg">
           <Image
-            src="/images/about/hero.jpg"
-            alt="Channel Partners team members collaborating in a retail environment"
+            src="/images/about/hero-team.jpg"
+            alt="Channel Partners team members talking in the office lobby"
             fill
             className="object-cover"
             priority

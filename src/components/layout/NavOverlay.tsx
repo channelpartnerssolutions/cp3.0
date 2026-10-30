@@ -15,7 +15,7 @@ const companyLinks = [
 ];
 
 const retailPartnerships = [
-  { href: "/best-buy-approved-3pl-provider", label: "Best Buy Approved 3PL Provider" },
+  { href: "/best-buy", label: "Best Buy Approved 3PL Provider" },
   { href: "/target-preferred-merchandising-partner", label: "Target Preferred Merchandising Partner" },
 ];
 

@@ -17,7 +17,7 @@ export function Stats() {
         .map((stat) => (
           <div key={stat.label} className="flex w-[240px] flex-col items-center gap-6">
             <CountUp value={stat.value} className="font-display text-6xl italic md:text-8xl" />
-            <p className="text-2xl leading-8">{stat.label}</p>
+            <p className="text-2xl leading-7">{stat.label}</p>
           </div>
         ))}
     </section>
