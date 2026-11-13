@@ -1,17 +1,13 @@
 import type { Metadata } from "next";
-import { StubPage } from "@/components/ui/StubPage";
+import { BlogIndex } from "@/components/blog/BlogIndex";
 
-// TODO(content): final page title and description
+export const revalidate = 3600; // must be a literal; keep in sync with BLOG_REVALIDATE_SECONDS
+
 export const metadata: Metadata = {
   title: "Blog",
   description: "News, insights and retail marketing perspectives from Channel Partners.",
 };
 
 export default function BlogPage() {
-  return (
-    <StubPage
-      title="Blog"
-      description="Served from WordPress via a rewrite once WORDPRESS_ORIGIN is configured — placeholder for this pass."
-    />
-  );
+  return <BlogIndex page={1} />;
 }

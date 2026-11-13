@@ -1,6 +1,6 @@
 type IconProps = { className?: string };
 
-function LinkedInIcon({ className }: IconProps) {
+export function LinkedInIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden>
       <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667h-3.554V9h3.414v1.561h.049c.476-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
@@ -24,10 +24,19 @@ function YouTubeIcon({ className }: IconProps) {
   );
 }
 
-function FacebookIcon({ className }: IconProps) {
+export function FacebookIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden>
       <path d="M22 12.061C22 6.505 17.523 2 12 2S2 6.505 2 12.061c0 5.022 3.657 9.184 8.438 9.94v-7.03H7.898v-2.91h2.54V9.845c0-2.523 1.492-3.918 3.777-3.918 1.094 0 2.238.196 2.238.196v2.476h-1.26c-1.243 0-1.63.775-1.63 1.57v1.892h2.773l-.443 2.91h-2.33V22c4.78-.756 8.437-4.918 8.437-9.939z" />
+    </svg>
+  );
+}
+
+// X (Twitter) mark, from the Figma Blog Single share rail.
+export function XIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 25.0712 25.6164" fill="currentColor" className={className} aria-hidden>
+      <path d="M14.925 10.8493L24.2532 0H22.0431L13.9348 9.41423L7.46252 0H0L9.78737 14.2361L0 25.6164H2.21002L10.7776 15.6712L17.6087 25.6164H25.0712L14.925 10.8493ZM3.01367 1.62167H6.41493L22.0574 23.9948H18.6563L3.01367 1.62167Z" />
     </svg>
   );
 }

@@ -28,7 +28,7 @@ export const pillars: PillarConfig[] = [
     switchLabel: "RETAIL",
     ctaLabel: "Start Your Project",
     ctaVariant: "primary",
-    taglineLines: ["Where Strategy", "Meets Shopper"],
+    taglineLines: ["From the Warehouse", "to the Sales Floor"],
     description:
       "Whether you're an established brand or trying to find your audience the sales floor is the frontlines of imprinting your story in the minds of your customer.",
     accentColor: "var(--color-cerulean)",
@@ -50,7 +50,7 @@ export const pillars: PillarConfig[] = [
     switchLabel: "TRAINING",
     ctaLabel: "Schedule a Consult",
     ctaVariant: "solid-medium-blue",
-    taglineLines: ["Where Playbook", "Meets Practice"],
+    taglineLines: ["From Curriculum", "to Confidence"],
     description:
       "Your brand strategy is only as good as the weakest point in the delivery chain, we turn your brand knowledge into a scalable system of learning, turning employees into brand champions.",
     accentColor: "var(--color-cerulean)",
@@ -70,7 +70,7 @@ export const pillars: PillarConfig[] = [
     switchLabel: "EXPERIENTIAL",
     ctaLabel: "Plan Your Activation",
     ctaVariant: "outline-light",
-    taglineLines: ["Where Ideation", "Meets Activation"],
+    taglineLines: ["From the Sketchpad", "to Center Stage"],
     description:
       "We take your message direct to your audience, from employee and corporate brand experiences to creative, in-person brand takeovers, we take your brand from the boardroom to the street.",
     accentColor: "var(--color-cerulean)",

@@ -209,10 +209,7 @@ export function Careers() {
       <div className="flex flex-col gap-12 pl-[var(--grid-margin)] md:flex-row md:items-center md:pl-[var(--grid-margin-md)]">
         <div className="flex shrink-0 flex-col items-start gap-6 pr-[var(--grid-margin)] md:w-[443px] md:pr-0">
           <div className="flex flex-col">
-            <h2 className="header-3 text-black">channel your</h2>
-            <p className="font-display text-[48px] italic leading-[60px] tracking-[-0.02em] text-cerulean">
-              Potential
-            </p>
+            <h2 className="header-3 max-w-[370px] text-black">We Hire for Passion and Train the Rest</h2>
             <p className="mt-3 text-base leading-6 text-black">
               We don&rsquo;t just hire talent, we hire perspective. Every person on our team
               brings something the next one couldn&rsquo;t, and that&rsquo;s what makes our

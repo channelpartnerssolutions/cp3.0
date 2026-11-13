@@ -2,21 +2,21 @@ import { Container } from "@/components/ui/Container";
 
 export function BrandStory() {
   return (
-    <section className="bg-white py-[100px]">
+    <section className="bg-white pb-[110px] pt-[100px]">
       <Container className="flex flex-col gap-4">
-        <h2 className="header-2">
-          Your brand isn&rsquo;t
+        <h2 className="header-2 max-w-[830px]">
+          <span className="text-cerulean">More Than Just Retail</span>
           <br />
-          <span className="text-cerulean">the strategy</span>
+          We Own Every Touchpoint in the Consumer Journey
         </h2>
-        <div className="max-w-[715px] text-2xl leading-8">
+        <div className="max-w-[830px] text-2xl leading-8">
           <p className="mb-4">
-            Your brand is what the public believes it is. It&rsquo;s the result of every
-            encounter across every touchpoint: in the aisle, on the street, in the room.
-            Deciding what the brand should be is the easy part. Somebody has to be there to
-            see it through.
+            We are the only consumer activation solution partner that truly does it all. From
+            the first floor plan to the final sale, we&rsquo;re there for all of it. We get
+            your products into the store, keep them looking right, train the people selling
+            them, and bring your brand to customers wherever they are.
           </p>
-          <p className="font-bold">That&rsquo;s where we come in.</p>
+          <p className="font-bold">One partner. Zero handoffs.</p>
         </div>
       </Container>
     </section>

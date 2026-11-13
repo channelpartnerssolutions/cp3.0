@@ -79,7 +79,7 @@ export function ThreePillars() {
         <div className="flex min-w-0 flex-1 flex-col justify-center gap-4">
           <h3 className="header-3">
             <span className="block">{primaryLine}</span>
-            <span className="block text-cerulean">{secondaryLine}</span>
+            <span className="block">{secondaryLine}</span>
           </h3>
           <p className="text-base leading-6">{active.description}</p>
           <div className="flex flex-col gap-4 pt-4">
