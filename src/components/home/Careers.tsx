@@ -219,7 +219,7 @@ export function Careers() {
               work impossible to copy.
             </p>
           </div>
-          <Button href={ICIMS_BASE} variant="primary">
+          <Button href="/careers#open-positions" variant="primary">
             Browse Job Openings
           </Button>
         </div>

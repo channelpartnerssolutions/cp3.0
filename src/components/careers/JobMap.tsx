@@ -5,6 +5,7 @@ import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { MapPin } from "lucide-react";
 import type { CircleMarker, Map as LeafletMap, LayerGroup, Marker, Path } from "leaflet";
 import { Container } from "@/components/ui/Container";
 import {
@@ -530,9 +531,10 @@ export function JobMap({ jobs }: { jobs: Job[] }) {
           type="button"
           onClick={() => flyToJob(job)}
           aria-label={`Show ${job.title} in ${job.city}, ${job.state} on the map`}
-          className="shrink-0 text-xs font-bold uppercase tracking-[0.6px] text-middle-grey hover:text-cerulean"
+          title="Show on map"
+          className="-m-2 shrink-0 rounded-lg p-2 text-middle-grey transition-colors hover:text-cerulean"
         >
-          Show on map
+          <MapPin aria-hidden="true" className="size-5" strokeWidth={2} />
         </button>
       )}
     </div>

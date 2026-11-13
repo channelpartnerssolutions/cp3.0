@@ -1,6 +1,33 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import {
+  Award,
+  Building2,
+  Clapperboard,
+  ClipboardList,
+  ConciergeBell,
+  Gamepad2,
+  Globe,
+  Hammer,
+  Handshake,
+  Headset,
+  Languages,
+  MapPinned,
+  MessagesSquare,
+  Mic,
+  MonitorSpeaker,
+  Newspaper,
+  PartyPopper,
+  Presentation,
+  Rocket,
+  Route,
+  Store,
+  Trophy,
+  UserPlus,
+  Video,
+  type LucideIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
 type Slot = {
@@ -10,7 +37,8 @@ type Slot = {
   solution: string;
   eyebrow: string;
   description: string;
-  capabilities: string;
+  // What the team brings to this kind of work, one icon each.
+  capabilities: { label: string; icon: LucideIcon }[];
   ctaLabel: string;
 };
 
@@ -21,8 +49,12 @@ const SLOTS: Slot[] = [
     eyebrow: "Activations & Launches",
     description:
       "Pop-up shops, immersive brand activations, mobile tours, publicity stunts, and product launches, built to turn a strategy into something people can walk into, touch, and talk about.",
-    capabilities:
-      "Location strategy · custom fabrication · AV & technology · onsite operations",
+    capabilities: [
+      { label: "Location strategy", icon: MapPinned },
+      { label: "Custom fabrication", icon: Hammer },
+      { label: "AV & technology", icon: MonitorSpeaker },
+      { label: "Onsite operations", icon: ClipboardList },
+    ],
     ctaLabel: "Plan Your Launch",
   },
   {
@@ -31,8 +63,12 @@ const SLOTS: Slot[] = [
     eyebrow: "Conferences & B2B Experiences",
     description:
       "From exhibit and booth design to full-scale conference production, we build the environments where business happens: trade shows, corporate award shows, and incentive trips that make recognition feel earned.",
-    capabilities:
-      "Venue strategy · attendee journey · show calling · sponsorship integration",
+    capabilities: [
+      { label: "Venue strategy", icon: Building2 },
+      { label: "Attendee journey", icon: Route },
+      { label: "Show calling", icon: Headset },
+      { label: "Sponsorship integration", icon: Handshake },
+    ],
     ctaLabel: "Plan Your Event",
   },
   {
@@ -41,8 +77,12 @@ const SLOTS: Slot[] = [
     eyebrow: "Virtual & Hybrid Experiences",
     description:
       "Global conferences, interactive trainings, and custom event sites that extend a live moment beyond the room, built for scale, not just streamed.",
-    capabilities:
-      "Livestream production · gamification · multilingual delivery · digital hubs",
+    capabilities: [
+      { label: "Livestream production", icon: Video },
+      { label: "Gamification", icon: Gamepad2 },
+      { label: "Multilingual delivery", icon: Languages },
+      { label: "Digital hubs", icon: Globe },
+    ],
     ctaLabel: "Plan Your Experience",
   },
   {
@@ -51,8 +91,12 @@ const SLOTS: Slot[] = [
     eyebrow: "Employee Engagement",
     description:
       "Rallies, town halls, offsites, onboarding, and culture initiatives designed around the moments that shape how people feel about the organizations they work for.",
-    capabilities:
-      "Recognition programs · new-hire orientation · EVP communications · culture activations",
+    capabilities: [
+      { label: "Recognition programs", icon: Award },
+      { label: "New-hire orientation", icon: UserPlus },
+      { label: "EVP communications", icon: MessagesSquare },
+      { label: "Culture activations", icon: PartyPopper },
+    ],
     ctaLabel: "Plan Your Activity",
   },
   {
@@ -61,8 +105,12 @@ const SLOTS: Slot[] = [
     eyebrow: "Product Launches",
     description:
       "Reveal events, press days, and retail-ready launch moments that carry a product's story from the boardroom onto the floor.",
-    capabilities:
-      "Launch strategy · press & influencer relations · retail rollout · demo staging",
+    capabilities: [
+      { label: "Launch strategy", icon: Rocket },
+      { label: "Press & influencer relations", icon: Newspaper },
+      { label: "Retail rollout", icon: Store },
+      { label: "Demo staging", icon: Presentation },
+    ],
     ctaLabel: "Plan Your Reveal",
   },
   {
@@ -71,8 +119,12 @@ const SLOTS: Slot[] = [
     eyebrow: "Culture & Recognition",
     description:
       "Award shows, milestone celebrations, and recognition programs built to make people feel seen by the organizations they help build.",
-    capabilities:
-      "Awards production · storytelling & video · talent & staging · guest experience",
+    capabilities: [
+      { label: "Awards production", icon: Trophy },
+      { label: "Storytelling & video", icon: Clapperboard },
+      { label: "Talent & staging", icon: Mic },
+      { label: "Guest experience", icon: ConciergeBell },
+    ],
     ctaLabel: "Plan Your Celebration",
   },
 ];
@@ -99,6 +151,18 @@ export function WeLoveWhatWeDo() {
     );
 
     videoRefs.current.forEach((el) => el && observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
+  // The text panel matches the rendered video card height, which shrinks
+  // below its 699px design height on narrower screens; a fixed 699px panel
+  // then centers the text well below the video.
+  const [videoHeight, setVideoHeight] = useState<number | null>(null);
+  useEffect(() => {
+    const first = videoRefs.current[0];
+    if (!first) return;
+    const observer = new ResizeObserver(([entry]) => setVideoHeight(entry.contentRect.height));
+    observer.observe(first);
     return () => observer.disconnect();
   }, []);
 
@@ -145,22 +209,32 @@ export function WeLoveWhatWeDo() {
           </div>
 
           <div className="relative w-full">
-            {/* Height matches the video's own rendered height (559x699,
-                same aspect the video cards use), not the viewport, so the
-                text sits centered across the same vertical span as the
-                active video. `top-[15vh]` (rather than `top-0`) locks it
-                partway down the viewport instead of flush under the
-                header. */}
-            <div className="sticky top-[15vh] flex h-[699px] flex-col items-start justify-center gap-[45px]">
+            {/* Height tracks the video card's rendered height (699px at
+                full size), not the viewport, so the text sits centered
+                across the same vertical span as the active video.
+                `top-[15vh]` (rather than `top-0`) locks it partway down the
+                viewport instead of flush under the header. */}
+            <div
+              className="sticky top-[15vh] flex h-[699px] flex-col items-start justify-center gap-[45px]"
+              style={videoHeight ? { height: videoHeight } : undefined}
+            >
               <div className="flex flex-col gap-4">
                 <h3 className="header-3 text-white">{active.eyebrow}</h3>
                 <p className="text-base leading-relaxed text-white/70">
                   {active.description}
                 </p>
               </div>
-              <p className="text-base leading-relaxed text-white/70">
-                {active.capabilities}
-              </p>
+              <ul className="flex flex-col gap-4">
+                {active.capabilities.map(({ label, icon: Icon }) => (
+                  <li
+                    key={label}
+                    className="flex items-center gap-3 text-base leading-6 text-white/80"
+                  >
+                    <Icon aria-hidden strokeWidth={1.5} className="size-6 shrink-0 text-white" />
+                    {label}
+                  </li>
+                ))}
+              </ul>
               <Button
                 href={`/contact?source=experiential-marketing-${active.solution}`}
                 variant="outline-light"
