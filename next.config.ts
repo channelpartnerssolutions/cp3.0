@@ -51,6 +51,9 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  experimental: {
+    agentUpgrade: "security",
+  },
   images: {
     // Blog featured images stay in the WordPress media library.
     remotePatterns: [new URL(`${WORDPRESS_URL}/wp-content/uploads/**`)],
