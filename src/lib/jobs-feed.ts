@@ -3,10 +3,9 @@
 // jobs arrive with the HTML) and by /api/jobs.
 //
 // Needs ICIMS_FEED_URL. Without it, or when the feed fails before any good
-// fetch, non-production environments get sample jobs and production gets none.
+// fetch, there are no jobs (never placeholder data).
 import { XMLParser } from "fast-xml-parser";
 import type { Job } from "@/lib/jobs";
-import { SAMPLE_JOBS } from "@/lib/data/sample-jobs";
 
 // Refetch the feed at most every 30 minutes. Callers' route segment configs
 // must use the same literal (`export const revalidate = 1800`).
@@ -15,7 +14,7 @@ export const JOBS_REVALIDATE_SECONDS = 1800;
 export type JobsResult = {
   jobs: Job[];
   updatedAt: string | null;
-  source: "feed" | "stale-feed" | "sample" | "unavailable";
+  source: "feed" | "stale-feed" | "unavailable";
 };
 
 type GeocodeCache = Map<string, { lat: number; lng: number } | null>;
@@ -136,14 +135,11 @@ async function fetchAndNormalizeJobs(feedUrl: string): Promise<Job[]> {
   return jobs;
 }
 
-// Sample jobs look real (titles, towns, pay), so the live site never shows
-// them: with no feed it returns an empty list and the page points to iCIMS.
+// The only jobs ever shown come from the iCIMS feed, in every environment.
+// With no feed, the list is empty and the page says listings are unavailable
+// and points to iCIMS.
 function fallbackResult(): JobsResult {
-  const updatedAt = new Date().toISOString();
-  if (process.env.VERCEL_ENV === "production") {
-    return { jobs: [], updatedAt, source: "unavailable" };
-  }
-  return { jobs: SAMPLE_JOBS, updatedAt, source: "sample" };
+  return { jobs: [], updatedAt: new Date().toISOString(), source: "unavailable" };
 }
 
 // Never throws: falls back to the last good snapshot, then to fallbackResult().
