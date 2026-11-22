@@ -2,8 +2,10 @@ export type Leader = {
   name: string;
   title: string;
   image: string;
+  // Paragraphs are separated by a blank line ("\n\n").
   bio: string;
-  linkedIn: string;
+  // Omit when there's no profile; the modal then leaves the link out.
+  linkedIn?: string;
 };
 
 export const CEO: Leader = {
@@ -17,9 +19,9 @@ export const CEO: Leader = {
 export const LEADERS: Leader[] = [
   {
     name: "Khalid Khakish",
-    title: "Chief of Staff",
+    title: "CFO",
     image: "/images/about/leader-khalid.png",
-    bio: "Khalid brings 20 years in financial operations, strategy, and governance. As Chief of Staff he partners with the C-suite to operationalize strategy, holding governance, accountability, and alignment in place across the organization. His record covers financial modeling, budgeting, forecasting, and acquisitions. His approach is data-first: decisions get made against numbers, not instinct. That discipline is what keeps growth from outrunning the structure supporting it.",
+    bio: "Khalid brings 20 years in financial operations, strategy, and governance. As CFO he partners with the C-suite to operationalize strategy, holding governance, accountability, and alignment in place across the organization. His record covers financial modeling, budgeting, forecasting, and acquisitions. His approach is data-first: decisions get made against numbers, not instinct. That discipline is what keeps growth from outrunning the structure supporting it.",
     linkedIn: "https://www.linkedin.com/in/khalidkakish/",
   },
   {
@@ -44,11 +46,12 @@ export const LEADERS: Leader[] = [
     linkedIn: "https://www.linkedin.com/in/jack-murphy-9080613/",
   },
   {
-    name: "Tammy Alemazkour",
-    title: "EVP Retail Execution",
-    image: "/images/about/leader-tammy.png",
-    bio: "Tammy brings 25 years of retail experience to Channel Partners and leads Operations and Budgeting. She started her career as a retail rep and worked her way up through supervisor and management roles, which means she has done nearly every job she now oversees. She joins us from Omni Comm / CPM. Her focus is operational discipline: programs that run to standard without being rescued mid-flight.",
-    linkedIn: "https://www.linkedin.com/in/tammyalemazkour/",
+    name: "Chris Frederick",
+    title: "Group EVP",
+    image: "/images/about/leader-chris.png",
+    // TODO(content): the supplied quote was cut off after "at the speed our clients";
+    // "need" is a stand-in until the full sentence is confirmed. LinkedIn URL to come.
+    bio: "Chris leads the Retail Execution team (REX) at Channel Partners, overseeing Field Operations, Client Services, Commercial Construction, Professional Services, and Warehousing, Fulfillment & Logistics. He brings over 25 years of experience in retail, having held multiple C-suite and senior executive leadership roles overseeing large-scale operations, analytics, and business transformation. He holds a BS in Supply Chain Operations from Auburn University.\n\nHis leadership philosophy: “Retail never stops evolving, and neither should we. I believe in empowering great people, challenging the status quo, and turning ideas into action at the speed our clients need.”",
   },
   {
     name: "Mai Zazueta",

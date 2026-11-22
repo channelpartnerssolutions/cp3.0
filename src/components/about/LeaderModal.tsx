@@ -36,15 +36,21 @@ export function LeaderModal({ leader, onClose }: { leader: Leader | null; onClos
             </h2>
             <p className="mt-0.5 text-base leading-[1.46]">{leader.title}</p>
           </div>
-          <p className="mt-6 text-base leading-6">{leader.bio}</p>
-          <a
-            href={leader.linkedIn}
-            target="_blank"
-            rel="noreferrer"
-            className="font-heading mt-auto pt-6 text-lg uppercase tracking-[0.18em] text-cerulean underline underline-offset-2"
-          >
-            {firstName}&rsquo;s linkedin
-          </a>
+          <div className="mt-6 flex flex-col gap-4 text-base leading-6">
+            {leader.bio.split("\n\n").map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+          </div>
+          {leader.linkedIn && (
+            <a
+              href={leader.linkedIn}
+              target="_blank"
+              rel="noreferrer"
+              className="font-heading mt-auto pt-6 text-lg uppercase tracking-[0.18em] text-cerulean underline underline-offset-2"
+            >
+              {firstName}&rsquo;s linkedin
+            </a>
+          )}
         </div>
         <div className="relative aspect-[300/400] w-full shrink-0 overflow-hidden rounded-lg md:w-[350px]">
           <Image src={leader.image} alt={leader.name} fill className="object-cover" />
