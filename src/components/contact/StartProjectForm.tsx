@@ -46,7 +46,7 @@ const PILLAR_ICONS: Record<string, string> = {
 };
 
 const SOLUTION_ICONS: Record<string, LucideIcon> = {
-  "store-mapping": MapIcon,
+  "3d-mapping": MapIcon,
   installation: Drill,
   "audits-compliance": ClipboardCheck,
   "assisted-sales-training": Presentation,

@@ -36,7 +36,7 @@ export const pillars: PillarConfig[] = [
     surface: "light",
     image: "/images/homepage/pillar-photo-construction-logistics.png",
     solutions: [
-      { slug: "store-mapping", label: "Store Mapping", icon: "/images/solution-icons/store-mapping.svg" },
+      { slug: "3d-mapping", label: "3D Mapping", icon: "/images/solution-icons/3d-mapping.svg" },
       { slug: "construction", label: "Construction", icon: "/images/solution-icons/construction.svg" },
       { slug: "installation", label: "Installation", icon: "/images/solution-icons/installation.svg" },
       { slug: "warehousing-fulfillment-logistics", label: "Warehousing, Fulfillment, & Logistics", icon: "/images/solution-icons/warehousing-fulfillment-logistics.svg" },
