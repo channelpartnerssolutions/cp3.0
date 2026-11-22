@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getPillar, pillars } from "@/lib/pillars";
-import { PillarHeader } from "@/components/layout/PillarHeader";
+import { SiteHeader } from "@/components/layout/SiteHeader";
 
 export function generateStaticParams() {
   return pillars.map((p) => ({ pillar: p.slug }));
@@ -14,12 +14,11 @@ export default async function PillarLayout({
   params: Promise<{ pillar: string }>;
 }) {
   const { pillar: slug } = await params;
-  const pillar = getPillar(slug);
-  if (!pillar) notFound();
+  if (!getPillar(slug)) notFound();
 
   return (
     <div>
-      <PillarHeader pillar={pillar} />
+      <SiteHeader />
       {children}
     </div>
   );

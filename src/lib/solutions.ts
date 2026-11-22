@@ -77,10 +77,11 @@ export type SolutionContent = {
 
 const IMG = "/images/retail/solutions";
 const SOLUTIONS = "/retail-execution/solutions";
+const CL_SOLUTIONS = "/construction-logistics/solutions";
 
 export const solutions: SolutionContent[] = [
   {
-    pillar: "retail-execution",
+    pillar: "construction-logistics",
     slug: "warehousing-fulfillment-logistics",
     meta: {
       title: "Warehousing, Fulfillment & Logistics",
@@ -234,7 +235,7 @@ export const solutions: SolutionContent[] = [
     worksWith: [
       {
         label: "Construction",
-        href: `${SOLUTIONS}/construction`,
+        href: `${CL_SOLUTIONS}/construction`,
         body: "Fixtures delivered to the build schedule, not the receiving calendar.",
       },
       {
@@ -963,12 +964,12 @@ export const solutions: SolutionContent[] = [
       },
       {
         label: "Warehousing, Fulfillment & Logistics",
-        href: `${SOLUTIONS}/warehousing-fulfillment-logistics`,
+        href: `${CL_SOLUTIONS}/warehousing-fulfillment-logistics`,
         body: "Replacement parts held in inventory and shipped next day, so repairs aren’t waiting on a part.",
       },
       {
         label: "Construction",
-        href: `${SOLUTIONS}/construction`,
+        href: `${CL_SOLUTIONS}/construction`,
         body: "Permanent fixture replacement when repair isn’t enough.",
       },
     ],
@@ -1060,7 +1061,7 @@ export const solutions: SolutionContent[] = [
   // Source: "Construction - Solutions Page Content" (draft, Oct 12 2026). No
   // SME brief yet; a Construction SME needs to check every operational claim.
   {
-    pillar: "retail-execution",
+    pillar: "construction-logistics",
     slug: "construction",
     meta: {
       title: "Retail Construction & Remodels",
@@ -1213,7 +1214,7 @@ export const solutions: SolutionContent[] = [
     worksWith: [
       {
         label: "Warehousing, Fulfillment & Logistics",
-        href: `${SOLUTIONS}/warehousing-fulfillment-logistics`,
+        href: `${CL_SOLUTIONS}/warehousing-fulfillment-logistics`,
         body: "Fixtures and materials staged to each phase of the remodel.",
       },
       {
@@ -1515,7 +1516,7 @@ export const solutions: SolutionContent[] = [
       },
       {
         label: "Warehousing, Fulfillment & Logistics",
-        href: `${SOLUTIONS}/warehousing-fulfillment-logistics`,
+        href: `${CL_SOLUTIONS}/warehousing-fulfillment-logistics`,
         body: "Reset materials kitted per store and on site before your specialist arrives.",
       },
       {

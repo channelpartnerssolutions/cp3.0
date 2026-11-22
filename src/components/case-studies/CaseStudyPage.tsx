@@ -24,11 +24,11 @@ export function CaseStudyPage({ study, pillar }: { study: CaseStudy; pillar: Pil
 
   return (
     <>
-      {/* Sits behind the transparent pillar header, like the Experiential
+      {/* Sits behind the transparent site header, like the Experiential
           hero; id="hero" switches the header to its white theme over it. */}
       <section
         id="hero"
-        className="relative -mt-[var(--pillar-header-height)] flex min-h-[520px] w-full items-end overflow-hidden bg-near-black md:min-h-[640px]"
+        className="relative -mt-[var(--header-height)] flex min-h-[520px] w-full items-end overflow-hidden bg-near-black md:min-h-[640px]"
       >
         <Image src={study.image.src} alt={study.image.alt} fill priority sizes="100vw" className="object-cover" />
         {study.video && <HeroVideo src={study.video} />}
@@ -36,7 +36,7 @@ export function CaseStudyPage({ study, pillar }: { study: CaseStudy; pillar: Pil
           aria-hidden
           className="absolute inset-0 bg-gradient-to-t from-near-black via-near-black/60 to-near-black/20"
         />
-        <Container className="relative grid grid-cols-12 gap-x-6 pt-[calc(var(--pillar-header-height)+48px)] pb-16 md:pb-20">
+        <Container className="relative grid grid-cols-12 gap-x-6 pt-[calc(var(--header-height)+48px)] pb-16 md:pb-20">
           <div className={`${FRAME} flex flex-col items-start gap-4`}>
             <Eyebrow>Case study</Eyebrow>
             <h1 className="header-1 max-w-[900px] text-white max-md:text-[34px]! max-md:leading-[42px]!">

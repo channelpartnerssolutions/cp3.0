@@ -17,13 +17,13 @@ export function SolutionPage({ content, pillar }: { content: SolutionContent; pi
 
   return (
     <>
-      {/* Sits behind the transparent pillar header; id="hero" switches the
+      {/* Sits behind the transparent site header; id="hero" switches the
           header to its white theme over it. */}
       <section
         id="hero"
-        className="relative -mt-[var(--pillar-header-height)] flex min-h-[560px] w-full items-end bg-near-black md:min-h-[720px]"
+        className="relative -mt-[var(--header-height)] flex min-h-[560px] w-full items-end bg-near-black md:min-h-[720px]"
       >
-        <Container className="pt-[calc(var(--pillar-header-height)+48px)] pb-16 md:pb-20">
+        <Container className="pt-[calc(var(--header-height)+48px)] pb-16 md:pb-20">
           <div className="flex max-w-[900px] flex-col items-start gap-4">
             <Eyebrow>{hero.eyebrow}</Eyebrow>
             <h1 className="header-1 max-w-[720px] text-white max-md:text-[34px]! max-md:leading-[42px]!">

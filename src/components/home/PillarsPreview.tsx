@@ -1,6 +1,6 @@
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { ThreePillars } from "./ThreePillars";
+import { PillarsCarousel } from "./PillarsCarousel";
 
 export function PillarsPreview() {
   return (
@@ -11,7 +11,7 @@ export function PillarsPreview() {
           <br />
           <span className="text-cerulean">That Does It All</span>
         </SectionHeading>
-        <ThreePillars />
+        <PillarsCarousel />
       </Container>
     </section>
   );

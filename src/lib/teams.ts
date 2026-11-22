@@ -1,6 +1,6 @@
-// Pillar "Meet the Team" pages at /<pillar>/about, rendered by
-// components/team/PillarTeamPage. A pillar without an entry here keeps the
-// placeholder page.
+// Each pillar's "Meet the team" block, shown on the pillar's home page by
+// components/team/PillarTeamSections (old /<pillar>/about URLs redirect to
+// it). A pillar without an entry here shows no team section.
 //
 // Two tiers: `leaders` get editorial profiles (large portrait, their own
 // point of view, the projects they led, LinkedIn), then `members` fill a grid
@@ -26,10 +26,8 @@ export type TeamMember = { name: string; title: string; image?: ExperientialImag
 
 export type PillarTeam = {
   pillar: string;
+  // Opens the block, under the "meet the team" heading.
   intro: string;
-  // Full-bleed photo behind the page's hero; without one, the hero is a
-  // plain dark band marked "Background photo needed".
-  heroImage?: ExperientialImage;
   // Heading and intro over the leaders' profiles.
   leadersHeading?: string;
   leadersIntro?: string;
@@ -46,7 +44,6 @@ export const teams: PillarTeam[] = [
     // TODO(content): placeholder intro.
     intro:
       "Strategists, producers and designers who have spent more than 25 years turning ideas into experiences people remember.",
-    // TODO(content): hero background photo (the team on site works well).
     leadersHeading: "Leaders who stay in the work",
     leadersIntro:
       "You won’t meet these three at the pitch and then never again. They shape the strategy, sit in the creative reviews and are on site when the doors open.",

@@ -22,25 +22,46 @@ export type PillarConfig = {
 
 export const pillars: PillarConfig[] = [
   {
+    slug: "construction-logistics",
+    label: "Construction & Logistics",
+    navLabel: "construction & logistics",
+    switchLabel: "CONSTRUCTION",
+    ctaLabel: "Start Your Project",
+    ctaVariant: "primary",
+    // TODO(content): placeholder headline and description.
+    taglineLines: ["From Blueprint", "to Grand Opening"],
+    description:
+      "Before a single product hits the shelf, the space has to be ready. We map, build, install and stock your footprint so every location opens on time and on brand.",
+    accentColor: "var(--color-cerulean)",
+    surface: "light",
+    image: "/images/homepage/pillar-photo-construction-logistics.png",
+    solutions: [
+      { slug: "store-mapping", label: "Store Mapping", icon: "/images/solution-icons/store-mapping.svg" },
+      { slug: "construction", label: "Construction", icon: "/images/solution-icons/construction.svg" },
+      { slug: "installation", label: "Installation", icon: "/images/solution-icons/installation.svg" },
+      { slug: "warehousing-fulfillment-logistics", label: "Warehousing, Fulfillment, & Logistics", icon: "/images/solution-icons/warehousing-fulfillment-logistics.svg" },
+    ],
+  },
+  {
     slug: "retail-execution",
     label: "Retail Execution",
     navLabel: "retail execution",
     switchLabel: "RETAIL",
     ctaLabel: "Start Your Project",
     ctaVariant: "primary",
-    taglineLines: ["From the Warehouse", "to the Sales Floor"],
+    // TODO(content): replaces "From the Warehouse / to the Sales Floor" now that
+    // warehousing lives under Construction & Logistics.
+    taglineLines: ["From the Shelf", "to the Shopper"],
     description:
       "Whether you're an established brand or trying to find your audience the sales floor is the frontlines of imprinting your story in the minds of your customer.",
     accentColor: "var(--color-cerulean)",
     surface: "light",
     image: "/images/homepage/pillar-photo-retail.png",
     solutions: [
-      { slug: "audits-compliance", label: "Audits & Compliance", icon: "/images/homepage/icon-audits-compliance.png" },
-      { slug: "assisted-sales-training", label: "Assisted Sales & Training", icon: "/images/homepage/icon-assisted-sales.png" },
-      { slug: "construction", label: "Construction", icon: "/images/homepage/icon-construction.png" },
-      { slug: "merchandising", label: "Merchandising", icon: "/images/homepage/icon-merchandising.png" },
-      { slug: "break-fix", label: "Break Fix & Continuity", icon: "/images/homepage/icon-break-fix.png" },
-      { slug: "warehousing-fulfillment-logistics", label: "Warehousing, Fulfillment, & Logistics", icon: "/images/homepage/icon-warehousing.png" },
+      { slug: "audits-compliance", label: "Audits & Compliance", icon: "/images/solution-icons/audits-compliance.svg" },
+      { slug: "assisted-sales-training", label: "Assisted Sales & Training", icon: "/images/solution-icons/assisted-sales-training.svg" },
+      { slug: "merchandising", label: "Merchandising", icon: "/images/solution-icons/merchandising.svg" },
+      { slug: "break-fix", label: "Break Fix & Continuity", icon: "/images/solution-icons/break-fix.svg" },
     ],
   },
   {
@@ -57,10 +78,10 @@ export const pillars: PillarConfig[] = [
     surface: "light",
     image: "/images/homepage/pillar-photo-training.png",
     solutions: [
-      { slug: "curriculum-program-design", label: "Curriculum & Program Design", icon: "/images/homepage/icon-curriculum-program-design.png" },
-      { slug: "instructor-sourcing-certification", label: "Instructor Sourcing & Certification", icon: "/images/homepage/icon-instructor-sourcing.png" },
-      { slug: "training-delivery", label: "Training Delivery", icon: "/images/homepage/icon-training-delivery.png" },
-      { slug: "audience-enablement-program", label: "Audience Enablement Program", icon: "/images/homepage/icon-audience-enablement.png" },
+      { slug: "curriculum-program-design", label: "Curriculum & Program Design", icon: "/images/solution-icons/curriculum-program-design.svg" },
+      { slug: "instructor-sourcing-certification", label: "Instructor Sourcing & Certification", icon: "/images/solution-icons/instructor-sourcing-certification.svg" },
+      { slug: "training-delivery", label: "Training Delivery", icon: "/images/solution-icons/training-delivery.svg" },
+      { slug: "audience-enablement-program", label: "Audience Enablement Program", icon: "/images/solution-icons/audience-enablement-program.svg" },
     ],
   },
   {
@@ -77,9 +98,9 @@ export const pillars: PillarConfig[] = [
     surface: "dark",
     image: "/images/homepage/pillar-photo-experiential.png",
     solutions: [
-      { slug: "brand-activations", label: "Brand Activations", icon: "/images/homepage/icon-experiential-marketing.png" },
-      { slug: "conferences-b2b-events", label: "Conferences & B2B Events", icon: "/images/homepage/icon-conferences-b2b.png" },
-      { slug: "employee-engagement", label: "Employee Engagement", icon: "/images/homepage/icon-employee-engagement.png" },
+      { slug: "brand-activations", label: "Brand Activations", icon: "/images/solution-icons/brand-activations.svg" },
+      { slug: "conferences-b2b-events", label: "Conferences & B2B Events", icon: "/images/solution-icons/conferences-b2b-events.svg" },
+      { slug: "employee-engagement", label: "Employee Engagement", icon: "/images/solution-icons/employee-engagement.svg" },
     ],
   },
 ];

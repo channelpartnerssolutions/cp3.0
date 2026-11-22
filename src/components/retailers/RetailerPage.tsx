@@ -96,15 +96,15 @@ export function RetailerPage({ content }: { content: RetailerPageContent }) {
 
   return (
     <>
-      {/* Pulled up under the transparent gateway header (its spacer would
+      {/* Pulled up under the transparent site header (its spacer would
           otherwise leave a white band); id="hero" switches the header to its
           white theme over it. */}
       <section
         id="hero"
-        className="relative -mt-[var(--gateway-header-height)] flex min-h-[600px] w-full items-end bg-near-black md:min-h-[760px]">
+        className="relative -mt-[var(--header-height)] flex min-h-[600px] w-full items-end bg-near-black md:min-h-[760px]">
         <Image src={hero.image.src} alt={hero.image.alt} fill priority sizes="100vw" className="object-cover" />
         <div aria-hidden className="absolute inset-0 bg-near-black/75" />
-        <Container className="relative pt-[calc(var(--gateway-header-height)+48px)] pb-16 md:pb-24">
+        <Container className="relative pt-[calc(var(--header-height)+48px)] pb-16 md:pb-24">
           <div className="flex max-w-[900px] flex-col items-start gap-4">
             <Eyebrow className="text-white!">{hero.eyebrow}</Eyebrow>
             <h1 className="header-1 max-w-[820px] text-white max-md:text-[34px]! max-md:leading-[42px]!">

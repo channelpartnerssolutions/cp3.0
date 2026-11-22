@@ -1,9 +1,9 @@
-import { GatewayHeader } from "@/components/layout/GatewayHeader";
+import { SiteHeader } from "@/components/layout/SiteHeader";
 
 export default function GatewayLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <GatewayHeader />
+      <SiteHeader />
       {children}
     </>
   );

@@ -35,15 +35,15 @@ export function ExperientialSolutionPage({
 
   return (
     <>
-      {/* Sits behind the transparent pillar header; id="hero" switches the
+      {/* Sits behind the transparent site header; id="hero" switches the
           header to its white theme over it. */}
       <section
         id="hero"
-        className="relative -mt-[var(--pillar-header-height)] flex min-h-[640px] flex-col overflow-hidden bg-near-black text-white md:min-h-screen"
+        className="relative -mt-[var(--header-height)] flex min-h-[640px] flex-col overflow-hidden bg-near-black text-white md:min-h-screen"
       >
         {hero.video && <HeroVideo src={hero.video} />}
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(18_30_35/0.6)_0%,rgb(18_30_35/0.4)_40%,rgb(18_30_35/0.92)_100%)]" />
-        <Container className="relative z-10 flex flex-1 flex-col justify-end pt-[calc(var(--pillar-header-height)+48px)] pb-12 md:pb-24">
+        <Container className="relative z-10 flex flex-1 flex-col justify-end pt-[calc(var(--header-height)+48px)] pb-12 md:pb-24">
           <Eyebrow className="mb-4">{hero.eyebrow}</Eyebrow>
           <h1 className={`${H1} max-w-[900px]`}>
             <Accented headline={hero} accentClassName="text-cerulean" />
@@ -68,12 +68,12 @@ export function ExperientialSolutionPage({
         </Container>
       </section>
 
-      <section id="work" className="scroll-mt-[var(--pillar-header-height)] bg-near-black pt-16 pb-20 text-white md:pt-24 md:pb-32">
+      <section id="work" className="scroll-mt-[var(--header-height)] bg-near-black pt-16 pb-20 text-white md:pt-24 md:pb-32">
         <Container>
           <div className="mb-12 flex flex-wrap items-end justify-between gap-6">
             <h2 className={`${H2} max-w-[840px]`}>{work.heading}</h2>
             <Link
-              href={`/${pillar.slug}/case-studies`}
+              href={`/case-studies?pillar=${pillar.slug}`}
               className="border-b border-cerulean pb-1.5 text-sm font-bold tracking-[0.05em] text-white uppercase transition-colors hover:text-cerulean"
             >
               See all work →

@@ -6,9 +6,9 @@ const WORDPRESS_URL = (process.env.WORDPRESS_URL ?? "https://channelpartners.com
 // Top-level paths the new site owns; an old post slug matching one of these
 // must not be redirected into the blog.
 const RESERVED_ROOT_PATHS = new Set([
-  "about", "api", "best-buy", "blog", "careers", "contact", "solutions",
+  "about", "api", "best-buy", "blog", "careers", "case-studies", "contact", "solutions",
   "target-preferred-merchandising-partner", "best-buy-approved-3pl-provider",
-  "retail-execution", "training-enablement", "experiential-marketing",
+  "construction-logistics", "retail-execution", "training-enablement", "experiential-marketing",
 ]);
 
 // On the old site every post lived at the root (channelpartners.com/<slug>/);
@@ -66,8 +66,32 @@ const nextConfig: NextConfig = {
       // The per-pillar solutions overview pages were removed (Solutions is a
       // dropdown now); send old links and bookmarks to the pillar home page.
       {
-        source: "/:pillar(retail-execution|training-enablement|experiential-marketing)/solutions",
+        source: "/:pillar(construction-logistics|retail-execution|training-enablement|experiential-marketing)/solutions",
         destination: "/:pillar",
+        permanent: true,
+      },
+      // Each pillar's Meet the Team page became a section of its home page, and
+      // the per-pillar case study pages became one /case-studies section.
+      {
+        source: "/:pillar(construction-logistics|retail-execution|training-enablement|experiential-marketing)/about",
+        destination: "/:pillar#team",
+        permanent: true,
+      },
+      {
+        source: "/:pillar(construction-logistics|retail-execution|training-enablement|experiential-marketing)/case-studies",
+        destination: "/case-studies?pillar=:pillar",
+        permanent: true,
+      },
+      {
+        source: "/:pillar(construction-logistics|retail-execution|training-enablement|experiential-marketing)/case-studies/:slug",
+        destination: "/case-studies/:slug",
+        permanent: true,
+      },
+      // Construction and Warehousing moved from Retail Execution to the
+      // Construction & Logistics pillar.
+      {
+        source: "/retail-execution/solutions/:slug(construction|warehousing-fulfillment-logistics)",
+        destination: "/construction-logistics/solutions/:slug",
         permanent: true,
       },
       // The Best Buy page kept the old site's /best-buy URL; this placeholder
@@ -75,15 +99,15 @@ const nextConfig: NextConfig = {
       { source: "/best-buy-approved-3pl-provider", destination: "/best-buy", permanent: true },
       // Old WordPress solution URLs on channelpartners.com.
       ...Object.entries({
-        "audits-and-compliance-services": "audits-compliance",
-        "assisted-sales-and-training": "assisted-sales-training",
-        construction: "construction",
-        merchandising: "merchandising",
-        "break-fix-and-continuity": "break-fix",
-        "warehousing-fulfillment-and-logistics": "warehousing-fulfillment-logistics",
-      }).map(([oldSlug, slug]) => ({
+        "audits-and-compliance-services": "retail-execution/solutions/audits-compliance",
+        "assisted-sales-and-training": "retail-execution/solutions/assisted-sales-training",
+        construction: "construction-logistics/solutions/construction",
+        merchandising: "retail-execution/solutions/merchandising",
+        "break-fix-and-continuity": "retail-execution/solutions/break-fix",
+        "warehousing-fulfillment-and-logistics": "construction-logistics/solutions/warehousing-fulfillment-logistics",
+      }).map(([oldSlug, path]) => ({
         source: `/solutions/${oldSlug}`,
-        destination: `/retail-execution/solutions/${slug}`,
+        destination: `/${path}`,
         permanent: true,
       })),
       ...(await blogPostRedirects()),

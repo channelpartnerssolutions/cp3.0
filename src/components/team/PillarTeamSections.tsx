@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Container } from "@/components/ui/Container";
@@ -19,49 +18,31 @@ const SURFACES = {
 const PORTRAIT = "relative aspect-[3/4] w-full overflow-hidden rounded-lg";
 const HEADSHOT = "relative aspect-square w-full overflow-hidden rounded-lg";
 
-// A pillar's Meet the Team page, modeled on the corporate Who We Are
-// leadership grid: a dark intro, editorial profiles for the leaders, then a
-// grid of the rest of the team.
-export function PillarTeamPage({ team, pillar }: { team: PillarTeam; pillar: PillarConfig }) {
+// The "Meet the team" block on a pillar's home page (id="team", which the old
+// /<pillar>/about URLs redirect to). Modeled on the corporate Who We Are
+// leadership grid: editorial profiles for the leaders, then a grid of the
+// rest of the team.
+export function PillarTeamSections({ team, pillar }: { team: PillarTeam; pillar: PillarConfig }) {
   const surface = SURFACES[pillar.surface];
   // Leaders always sit on white, even on dark pillars.
   const leadersSurface = SURFACES.light;
 
   return (
-    <>
-      {/* Sits behind the transparent pillar header; id="hero" switches the
-          header to its white theme over it. Same build as the case study
-          hero: a full-bleed photo with the copy over a dark fade at the
-          bottom. */}
-      <section
-        id="hero"
-        className="relative -mt-[var(--pillar-header-height)] flex min-h-[520px] w-full items-end overflow-hidden bg-dark-blue text-white md:min-h-[640px]"
-      >
-        {team.heroImage ? (
-          <Image src={team.heroImage.src} alt={team.heroImage.alt} fill priority sizes="100vw" className="object-cover" />
-        ) : (
-          <p className="absolute top-[calc(var(--pillar-header-height)+24px)] right-[var(--grid-margin)] text-[11px] font-bold tracking-[0.2em] text-white/40 uppercase md:right-[var(--grid-margin-md)]">
-            Background photo needed
-          </p>
-        )}
-        <div
-          aria-hidden
-          className="absolute inset-0 bg-gradient-to-t from-near-black via-near-black/60 to-near-black/20"
-        />
-        <Container className="relative flex flex-col items-start gap-4 pt-[calc(var(--pillar-header-height)+48px)] pb-16 md:pb-20">
-          <Eyebrow>Our people</Eyebrow>
-          <h1 className="header-1 max-md:text-[34px]! max-md:leading-[42px]!">meet the team</h1>
-          <p className="max-w-[690px] text-lg leading-7 text-white/80 md:text-2xl md:leading-8">{team.intro}</p>
-        </Container>
-      </section>
-
+    <div id="team" className="scroll-mt-[var(--header-height)]">
       <section className={`w-full ${leadersSurface.section} pt-20 pb-24 md:pt-28 md:pb-32`}>
         <Container className="flex flex-col gap-12 md:gap-16">
+          <div className="flex flex-col items-start gap-4">
+            <Eyebrow>Our people</Eyebrow>
+            <h2 className="header-2 max-md:text-[28px]! max-md:leading-9!">meet the team</h2>
+            <p className={`max-w-[760px] text-lg leading-7 md:text-xl md:leading-8 ${leadersSurface.muted}`}>
+              {team.intro}
+            </p>
+          </div>
           {team.leadersHeading && (
-            <div className="flex flex-col gap-4">
-              <h2 className="header-2 max-md:text-[28px]! max-md:leading-9!">{team.leadersHeading}</h2>
+            <div className="flex flex-col gap-3">
+              <h3 className="header-4 max-md:text-[20px]! max-md:leading-7!">{team.leadersHeading}</h3>
               {team.leadersIntro && (
-                <p className={`max-w-[760px] text-lg leading-7 md:text-xl md:leading-8 ${leadersSurface.muted}`}>
+                <p className={`max-w-[760px] text-base leading-6 md:text-lg md:leading-7 ${leadersSurface.muted}`}>
                   {team.leadersIntro}
                 </p>
               )}
@@ -80,15 +61,10 @@ export function PillarTeamPage({ team, pillar }: { team: PillarTeam; pillar: Pil
       </section>
 
       {team.members.length > 0 && (
-        <section
-          className={`w-full ${surface.section} pt-20 pb-24 md:pt-24 md:pb-32 ${
-            // Last section above the near-black footer.
-            pillar.surface === "dark" ? `border-t border-b ${surface.rule}` : `border-t ${surface.rule}`
-          }`}
-        >
+        <section className={`w-full ${surface.section} border-t pt-20 pb-24 md:pt-24 md:pb-32 ${surface.rule}`}>
           <Container className="flex flex-col gap-12">
             <div className="flex flex-col gap-4">
-              <h2 className="header-2 max-md:text-[28px]! max-md:leading-9!">{team.membersHeading ?? "The team"}</h2>
+              <h3 className="header-2 max-md:text-[28px]! max-md:leading-9!">{team.membersHeading ?? "The team"}</h3>
               {team.membersIntro && (
                 <p className={`max-w-[760px] text-lg leading-7 md:text-xl md:leading-8 ${surface.muted}`}>
                   {team.membersIntro}
@@ -102,7 +78,7 @@ export function PillarTeamPage({ team, pillar }: { team: PillarTeam; pillar: Pil
                     <Media image={member.image} label={member.name} sizes="(min-width: 1024px) 16vw, (min-width: 640px) 33vw, 50vw" />
                   </div>
                   <div className="flex flex-col gap-1">
-                    <h3 className="text-sm leading-5 font-bold tracking-[0.12em] uppercase">{member.name}</h3>
+                    <h4 className="text-sm leading-5 font-bold tracking-[0.12em] uppercase">{member.name}</h4>
                     <p className={`text-sm leading-5 ${surface.muted}`}>{member.title}</p>
                   </div>
                 </li>
@@ -111,7 +87,7 @@ export function PillarTeamPage({ team, pillar }: { team: PillarTeam; pillar: Pil
           </Container>
         </section>
       )}
-    </>
+    </div>
   );
 }
 
@@ -134,7 +110,7 @@ function LeaderProfile({
         <Media image={leader.image} label={leader.name} sizes="(min-width: 768px) 33vw, 100vw" />
       </div>
       <div className="flex flex-col gap-1">
-        <h3 className="header-4 max-md:text-[20px]! max-md:leading-7!">{leader.name}</h3>
+        <h4 className="header-4 max-md:text-[20px]! max-md:leading-7!">{leader.name}</h4>
         <p className={`text-base leading-6 ${surface.muted}`}>{leader.title}</p>
       </div>
       <blockquote className="font-display text-[22px] leading-[1.35] font-light tracking-[-0.01em] italic md:text-2xl">

@@ -5,27 +5,33 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
-import type { PillarConfig } from "@/lib/pillars";
+import { pillars } from "@/lib/pillars";
 
 // Delay before a hover-opened menu closes, so the pointer can cross the gap
 // between the trigger and the panel without it snapping shut.
 const HOVER_CLOSE_MS = 150;
 
 /**
- * "Solutions" dropdown for the pillar header. The trigger is a button, not a
- * link, since there's no overview page to go to. Opens on click (or hover with
- * a mouse), closes on Escape, an outside click, focus leaving it, or picking a
- * solution. The panel follows the trigger in the DOM, so Tab moves straight
- * into it.
+ * "Solutions" mega-menu in the site header: one column per pillar, the
+ * pillar name linking to its home page and its solutions listed below. The
+ * trigger is a button, not a link, since there's no overview page to go to.
+ * Opens on click (or hover with a mouse), closes on Escape, an outside click,
+ * focus leaving it, or picking a link. The panel follows the trigger in the
+ * DOM, so Tab moves straight into it.
+ *
+ * The wrapper isn't positioned, so the panel anchors to the header bar's
+ * Container (which is) and spans its full width.
  */
-export function SolutionsMenu({ pillar, textColor }: { pillar: PillarConfig; textColor: string }) {
+export function SolutionsMenu({ textColor }: { textColor: string }) {
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const panelId = useId();
   const pathname = usePathname();
-  const onSolutionPage = pathname.startsWith(`/${pillar.slug}/solutions/`);
+  const onPillarPage = pillars.some(
+    (p) => pathname === `/${p.slug}` || pathname.startsWith(`/${p.slug}/`),
+  );
 
   const cancelClose = () => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
@@ -52,10 +58,14 @@ export function SolutionsMenu({ pillar, textColor }: { pillar: PillarConfig; tex
 
   useEffect(() => cancelClose, []);
 
+  const linkClasses = (current: boolean) =>
+    `transition-colors hover:text-cerulean focus-visible:text-cerulean focus-visible:outline-none ${
+      current ? "text-cerulean" : "text-near-black"
+    }`;
+
   return (
     <div
       ref={wrapperRef}
-      className="relative"
       onPointerEnter={(e) => {
         if (e.pointerType !== "mouse") return;
         cancelClose();
@@ -77,7 +87,7 @@ export function SolutionsMenu({ pillar, textColor }: { pillar: PillarConfig; tex
         aria-controls={panelId}
         onClick={() => setOpen((v) => !v)}
         className={`flex cursor-pointer items-center gap-1 text-base hover:text-cerulean ${
-          onSolutionPage ? "text-cerulean" : textColor
+          onPillarPage ? "text-cerulean" : textColor
         }`}
       >
         Solutions
@@ -88,37 +98,53 @@ export function SolutionsMenu({ pillar, textColor }: { pillar: PillarConfig; tex
         />
       </button>
 
-      {/* pt-3 (not a margin) keeps the hover area continuous down to the panel. */}
       <div
         id={panelId}
         hidden={!open}
-        className="absolute left-1/2 top-full z-10 -translate-x-1/2 pt-3"
+        className="absolute inset-x-[var(--grid-margin)] top-full z-10 md:inset-x-[var(--grid-margin-md)]"
       >
-        <ul className="w-[320px] overflow-hidden rounded-lg border border-light-grey bg-white py-2 shadow-lg">
-          {pillar.solutions.map((solution) => {
-            const href = `/${pillar.slug}/solutions/${solution.slug}`;
-            const current = pathname === href;
+        <div className="grid grid-cols-4 gap-8 rounded-lg border border-light-grey bg-white p-8 shadow-lg">
+          {pillars.map((pillar) => {
+            const pillarHref = `/${pillar.slug}`;
             return (
-              <li key={solution.slug}>
+              <div key={pillar.slug} className="flex flex-col gap-4">
                 <Link
-                  href={href}
-                  aria-current={current ? "page" : undefined}
+                  href={pillarHref}
+                  aria-current={pathname === pillarHref ? "page" : undefined}
                   onClick={() => setOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-2.5 text-base text-near-black transition-colors hover:bg-cerulean/5 hover:text-cerulean focus-visible:bg-cerulean/5 focus-visible:text-cerulean focus-visible:outline-none ${
-                    current ? "text-cerulean" : ""
-                  }`}
+                  className={`border-b border-light-grey pb-3 text-xs font-bold uppercase tracking-[0.6px] ${linkClasses(
+                    pathname === pillarHref,
+                  )}`}
                 >
-                  {solution.icon && (
-                    <span className="relative size-6 shrink-0">
-                      <Image src={solution.icon} alt="" fill sizes="24px" className="object-contain" />
-                    </span>
-                  )}
-                  {solution.label}
+                  {pillar.label}
                 </Link>
-              </li>
+                <ul className="flex flex-col gap-1">
+                  {pillar.solutions.map((solution) => {
+                    const href = `${pillarHref}/solutions/${solution.slug}`;
+                    const current = pathname === href;
+                    return (
+                      <li key={solution.slug}>
+                        <Link
+                          href={href}
+                          aria-current={current ? "page" : undefined}
+                          onClick={() => setOpen(false)}
+                          className={`flex items-center gap-3 py-1.5 text-sm ${linkClasses(current)}`}
+                        >
+                          {solution.icon && (
+                            <span className="relative size-6 shrink-0">
+                              <Image src={solution.icon} alt="" fill sizes="24px" className="object-contain" />
+                            </span>
+                          )}
+                          {solution.label}
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
             );
           })}
-        </ul>
+        </div>
       </div>
     </div>
   );

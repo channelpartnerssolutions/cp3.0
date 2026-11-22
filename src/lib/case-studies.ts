@@ -1,7 +1,8 @@
-// Case studies, one entry per page at /<pillar>/case-studies/<slug>. This is
-// the only place a case study's story lives: the case study pages, each
-// pillar's index, the solution pages' case study panels and the Experiential
-// home carousel all read from here.
+// Case studies, one entry per page at /case-studies/<slug>. This is the only
+// place a case study's story lives: the case study pages, the filterable
+// /case-studies index, the solution pages' case study panels and the
+// Experiential home carousel all read from here. Slugs must be unique across
+// every pillar, since the URL doesn't include the pillar.
 //
 // To add one: append an entry below. Every case study follows the same
 // formula: The Problem (a short statement of the problem or the client's
@@ -118,8 +119,8 @@ export function getCaseStudy(pillar: string, slug: string): CaseStudy | undefine
   return caseStudies.find((c) => c.pillar === pillar && c.slug === slug);
 }
 
-export function caseStudiesFor(pillar: string): CaseStudy[] {
-  return caseStudies.filter((c) => c.pillar === pillar);
+export function getCaseStudyBySlug(slug: string): CaseStudy | undefined {
+  return caseStudies.find((c) => c.slug === slug);
 }
 
 // The stat teasers lead with: the first result.
@@ -128,5 +129,5 @@ export function headlineResult(study: CaseStudy): CaseStudy["results"][number] |
 }
 
 export function caseStudyHref(study: CaseStudy): string {
-  return `/${study.pillar}/case-studies/${study.slug}`;
+  return `/case-studies/${study.slug}`;
 }

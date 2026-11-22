@@ -1,5 +1,7 @@
 import { FadeIn } from "@/components/ui/FadeIn";
+import { PillarTeamSections } from "@/components/team/PillarTeamSections";
 import type { PillarConfig } from "@/lib/pillars";
+import { getTeam } from "@/lib/teams";
 import { Hero } from "./Hero";
 import { BrandStory } from "./BrandStory";
 import { DarkIntroWatermark } from "./DarkIntroWatermark";
@@ -12,6 +14,7 @@ import { FinalCta } from "./FinalCta";
 import { ScrollGradient } from "./ScrollGradient";
 
 export function ExperientialHome({ pillar }: { pillar: PillarConfig }) {
+  const team = getTeam(pillar.slug);
   return (
     // `clip-path` keeps the fixed gradient layer from painting over the
     // footer once this page's content has scrolled past.
@@ -39,6 +42,7 @@ export function ExperientialHome({ pillar }: { pillar: PillarConfig }) {
         <FadeIn>
           <ThoughtLeadership />
         </FadeIn>
+        {team && <PillarTeamSections team={team} pillar={pillar} />}
         <FadeIn>
           <FinalCta pillar={pillar} />
         </FadeIn>

@@ -632,7 +632,7 @@ export function JobMap({ jobs }: { jobs: Job[] }) {
   return (
     <section
       id="open-positions"
-      className="w-full scroll-mt-[var(--gateway-header-height)] bg-white pb-[80px] pt-[40px]"
+      className="w-full scroll-mt-[var(--header-height)] bg-white pb-[80px] pt-[40px]"
     >
       <div className="flex flex-col gap-6 lg:h-[720px] lg:flex-row">
         {/* isolate: Leaflet panes use z-index 400–1000; keep them below the fixed header (z-60). */}

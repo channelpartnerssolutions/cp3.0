@@ -13,7 +13,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps<"/blog/page/[page]">): Promise<Metadata> {
   const { page } = await params;
-  return { title: `Blog: Page ${page}` };
+  return { title: `Industry Insights: Page ${page}` };
 }
 
 export default async function BlogPagedPage({ params }: PageProps<"/blog/page/[page]">) {

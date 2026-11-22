@@ -5,9 +5,11 @@ import {
   BookOpen,
   CalendarDays,
   ClipboardCheck,
+  Drill,
   GraduationCap,
   Hammer,
   HeartHandshake,
+  Map as MapIcon,
   Presentation,
   ShoppingBag,
   Sparkles,
@@ -32,17 +34,20 @@ import {
   primaryButtonClasses,
 } from "./formStyles";
 
-// Step 1 offers the three pillars; step 2 offers the chosen pillar's
-// solutions from src/lib/pillars.ts. The solution label is what HubSpot
-// receives in channel_partners_interest_contact_form, so its dropdown must
-// list these labels exactly (see go-live list).
+// Step 1 offers the pillars; step 2 offers the chosen pillar's solutions
+// from src/lib/pillars.ts. The solution label is what HubSpot receives in
+// channel_partners_interest_contact_form, so its dropdown must list these
+// labels exactly (see go-live list).
 const PILLAR_ICONS: Record<string, string> = {
+  "construction-logistics": "/images/contact/pillar-construction.svg",
   "retail-execution": "/images/contact/pillar-retail.svg",
   "training-enablement": "/images/contact/pillar-training.svg",
   "experiential-marketing": "/images/contact/pillar-experiential.svg",
 };
 
 const SOLUTION_ICONS: Record<string, LucideIcon> = {
+  "store-mapping": MapIcon,
+  installation: Drill,
   "audits-compliance": ClipboardCheck,
   "assisted-sales-training": Presentation,
   construction: Hammer,
@@ -375,7 +380,7 @@ export function StartProjectForm({
         <legend className="sr-only">{STEPS[0]}</legend>
         <fieldset className="min-w-0 border-0 p-0">
           <legend className={choiceLegendClasses}>How Can We Help?</legend>
-          <div className="grid max-w-[516px] grid-cols-3 gap-2">
+          <div className="grid max-w-[516px] grid-cols-2 gap-2">
             {pillars.map((p) => (
               <button
                 key={p.slug}

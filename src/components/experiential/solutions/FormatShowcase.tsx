@@ -66,7 +66,7 @@ export function FormatShowcase({ items, contactHref }: { items: Format[]; contac
         })}
       </ul>
 
-      <figure className="flex flex-col gap-4 lg:sticky lg:top-[calc(var(--pillar-header-height)+32px)]">
+      <figure className="flex flex-col gap-4 lg:sticky lg:top-[calc(var(--header-height)+32px)]">
         <div className="relative aspect-[4/5] w-full overflow-hidden rounded-lg bg-dark-blue">
           {items.map((item, i) => (
             <div

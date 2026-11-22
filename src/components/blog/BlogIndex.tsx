@@ -23,7 +23,7 @@ export async function BlogIndex({ page }: { page: number }) {
   return (
     <div className="bg-light-grey pt-10 pb-24 md:pt-14 md:pb-28">
       <Container className="flex flex-col gap-7">
-        <h1 className="sr-only">Blog</h1>
+        <h1 className="sr-only">Industry Insights</h1>
         {page === 1 && latest && (
           <>
             <SectionLabel>Latest post</SectionLabel>

@@ -4,7 +4,7 @@ import { HeroVideo } from "@/components/ui/HeroVideo";
 export function Hero({ pillar }: { pillar: PillarConfig }) {
   return (
     <section
-      className="relative -mt-[var(--pillar-header-height)] flex h-[600px] flex-col items-center justify-end overflow-hidden bg-near-black md:h-screen md:min-h-[600px]"
+      className="relative -mt-[var(--header-height)] flex h-[600px] flex-col items-center justify-end overflow-hidden bg-near-black md:h-screen md:min-h-[600px]"
     >
       <HeroVideo src="/videos/experiential/hero-sizzle.mp4" />
       {/* Full dark wash so the overlaid nav stays legible over bright footage. */}

@@ -9,9 +9,15 @@ import { SOCIAL_NETWORKS } from "./SocialIcons";
 
 const companyLinks = [
   { href: "/about", label: "Who We Are" },
+  { href: "/case-studies", label: "Results" },
   { href: "/careers", label: "Careers" },
-  { href: "/blog", label: "Blog" },
+  { href: "/blog", label: "Industry Insights" },
   { href: "/contact", label: "Contact" },
+];
+
+const retailPartnerships = [
+  { href: "/best-buy", label: "Best Buy Approved 3PL Provider" },
+  { href: "/target-preferred-merchandising-partner", label: "Target Preferred Merchandising Partner" },
 ];
 
 // TODO(content): add URLs. Links with an empty href are not rendered.
@@ -58,6 +64,18 @@ export function Footer() {
                 className="text-base underline underline-offset-4 hover:text-cerulean"
               >
                 {pillar.label}
+              </Link>
+            ))}
+            <span className="mt-6 text-xs font-bold uppercase tracking-[0.6px] text-white/50">
+              Retail Partnerships
+            </span>
+            {retailPartnerships.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-base underline underline-offset-4 hover:text-cerulean"
+              >
+                {link.label}
               </Link>
             ))}
           </div>

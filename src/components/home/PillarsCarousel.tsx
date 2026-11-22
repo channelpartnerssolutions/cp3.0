@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { pillars } from "@/lib/pillars";
 
-export function ThreePillars() {
+export function PillarsCarousel() {
   const [activeSlug, setActiveSlug] = useState(pillars[0].slug);
   const [isPaused, setIsPaused] = useState(false);
   const active = pillars.find((p) => p.slug === activeSlug) ?? pillars[0];
