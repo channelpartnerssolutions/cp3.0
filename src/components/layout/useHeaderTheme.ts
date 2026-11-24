@@ -21,10 +21,27 @@ export function useHeaderTheme(headerHeight: number): HeaderTheme {
 
   useEffect(() => {
     let observed: HTMLElement | null = null;
-    const intersection = new IntersectionObserver(
-      ([entry]) => setTheme(entry.isIntersecting ? "dark" : "light"),
-      { rootMargin: `-${headerHeight}px 0px 0px 0px`, threshold: 0 }
-    );
+    let disposed = false;
+
+    // Decide from the hero as it is now, not from the observer entry: an
+    // entry can arrive late, after a back/forward navigation has already
+    // swapped the page, and would strand the header in "dark" (white on
+    // white). A hero that's gone or hidden (display: none) counts as none.
+    const evaluate = () => {
+      if (disposed) return;
+      const hero = observed;
+      if (!hero || !hero.isConnected || hero.getClientRects().length === 0) {
+        setTheme("light");
+        return;
+      }
+      const { top, bottom } = hero.getBoundingClientRect();
+      setTheme(bottom > headerHeight && top < window.innerHeight ? "dark" : "light");
+    };
+
+    const intersection = new IntersectionObserver(evaluate, {
+      rootMargin: `-${headerHeight}px 0px 0px 0px`,
+      threshold: 0,
+    });
 
     // (Re)attach to the current #hero. The hero element can be swapped out
     // without a route change (hot reload, or a page re-rendering its hero),
@@ -32,18 +49,24 @@ export function useHeaderTheme(headerHeight: number): HeaderTheme {
     // intersects, stranding the header in "light" over a dark hero.
     const attach = () => {
       const hero = document.getElementById("hero");
-      if (hero === observed) return;
-      if (observed) intersection.unobserve(observed);
-      observed = hero;
-      if (hero) intersection.observe(hero);
-      else setTheme("light");
+      if (hero !== observed) {
+        if (observed) intersection.unobserve(observed);
+        observed = hero;
+        if (hero) intersection.observe(hero);
+      }
+      evaluate();
     };
 
     attach();
     const mutations = new MutationObserver(attach);
     mutations.observe(document.body, { childList: true, subtree: true });
+    // Back/forward restores the scroll position after the page renders.
+    const onPopState = () => requestAnimationFrame(attach);
+    window.addEventListener("popstate", onPopState);
 
     return () => {
+      disposed = true;
+      window.removeEventListener("popstate", onPopState);
       mutations.disconnect();
       intersection.disconnect();
     };

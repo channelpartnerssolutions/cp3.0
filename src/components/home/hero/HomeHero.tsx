@@ -10,7 +10,7 @@ export function HomeHero() {
   return (
     <section
       id="hero"
-      className="relative -mt-[var(--header-height)] flex h-[600px] flex-col items-center justify-center overflow-hidden bg-near-black md:h-screen md:min-h-[600px]"
+      className="relative -mt-[var(--header-height)] flex h-[600px] flex-col items-center justify-center overflow-hidden bg-near-black md:h-[95vh] md:min-h-[600px]"
     >
       <HeroVideo src="/videos/home/hero.mp4" />
       {/* Dark wash keeps the headline and overlaid nav legible over bright footage. */}

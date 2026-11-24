@@ -33,11 +33,11 @@ export function EmployeesSection() {
             />
           </div>
           <div className="flex w-full flex-col items-start gap-4 md:w-[42%]">
-            <h2 className="header-2 text-black">empowering our employees</h2>
+            <h2 className="header-2 text-black">empowering our people</h2>
             <p className="text-2xl leading-8 text-black">
               Each and every one of our employees brings something special to the table that
-              makes our brand unique. That&rsquo;s why we count on them to channel their inner
-              abilities and bring what makes them different to the table every day.
+              makes our brand unique. That&rsquo;s why we count on them to channel their
+              potential and bring what makes them different to the table every day.
             </p>
             <Button
               href="/careers"

@@ -77,7 +77,7 @@
 .header-1 {
   font-family: var(--font-heading), sans-serif;
   font-size: 54px;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 60px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -85,7 +85,7 @@
 .header-2 {
   font-family: var(--font-heading), sans-serif;
   font-size: 42px;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 50px;
   letter-spacing: 0.15em;
   text-transform: uppercase;
@@ -93,7 +93,7 @@
 .header-3 {
   font-family: var(--font-heading), sans-serif;
   font-size: 30px;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 36px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -101,7 +101,7 @@
 .header-4 {
   font-family: var(--font-heading), sans-serif;
   font-size: 24px;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 34px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -181,12 +181,57 @@ body {
   }
 }
 
-.content-fade-in {
-  animation: content-fade-in-up 0.6s ease-out;
+/* Homepage pillars carousel: on each change the text fades up line by
+   line (stagger set per element with --i), while the photo fades up and
+   in over the outgoing one and settles from a slight zoom. */
+@keyframes pillar-text-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pillar-photo-in {
+  from {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pillar-photo-settle {
+  from {
+    transform: scale(1.12);
+  }
+  to {
+    transform: none;
+  }
+}
+
+.pillar-text-in {
+  animation: pillar-text-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--i, 0) * 70ms);
+}
+
+.pillar-photo-in {
+  animation: pillar-photo-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.pillar-photo-in > * {
+  animation: pillar-photo-settle 1.4s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .content-fade-in {
+  .pillar-text-in,
+  .pillar-photo-in,
+  .pillar-photo-in > * {
     animation: none;
   }
 }

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { HeroVideo } from "@/components/ui/HeroVideo";
 
 export function CareersHero() {
   return (
@@ -11,13 +12,15 @@ export function CareersHero() {
         unoptimized
         className="object-cover"
       />
+      {/* The still shows until the video loads (and for reduced motion). */}
+      <HeroVideo src="/videos/careers/hero.mp4" />
       <div className="absolute inset-0 bg-near-black/50" aria-hidden />
 
       <div className="relative flex flex-col items-center gap-4 px-[var(--grid-margin)]">
         <h1 className="header-1 text-white">
-          career paths at
+          channel your
           <br />
-          channel partners
+          potential
         </h1>
         <p className="max-w-[560px] text-xl leading-[30.66px] text-white">
           From infrastructure to sales execution we&rsquo;ve got the right job to fit your

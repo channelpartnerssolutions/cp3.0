@@ -130,7 +130,7 @@ export function Benefits() {
       <div className="mx-auto grid w-full max-w-[var(--grid-max-width)] grid-cols-12 gap-x-6 px-[var(--grid-margin)] md:px-[var(--grid-margin-md)]">
         <div className="col-span-12 flex flex-col gap-10 xl:col-span-10 xl:col-start-2">
           <div className="flex max-w-[760px] flex-col gap-4">
-            <h2 className="header-2 text-black">Benefits, spelled out</h2>
+            <h2 className="header-2 text-black">Benefits that show up for you</h2>
             <p className="text-lg leading-7 text-black">
               What you get depends on your role and whether you&rsquo;re full or part time.
               Here&rsquo;s what each one includes, with no mystery asterisks.

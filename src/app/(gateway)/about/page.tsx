@@ -4,6 +4,7 @@ import { Stats } from "@/components/about/Stats";
 import { EmployeesSection } from "@/components/about/EmployeesSection";
 import { MeetTheCeo } from "@/components/about/MeetTheCeo";
 import { LeadershipGrid } from "@/components/about/LeadershipGrid";
+import { AboutCta } from "@/components/about/AboutCta";
 import { FadeIn } from "@/components/ui/FadeIn";
 
 // TODO(content): final page title and description
@@ -28,6 +29,7 @@ export default function AboutPage() {
       <FadeIn>
         <LeadershipGrid />
       </FadeIn>
+      <AboutCta />
     </>
   );
 }

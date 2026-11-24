@@ -2,7 +2,13 @@ import { Container } from "@/components/ui/Container";
 
 // Native <details> accordion, plus FAQPage structured data so the answers
 // stay eligible for search rich results like they were on the old site.
-export function SolutionFaqs({ faqs }: { faqs: { question: string; answer: string }[] }) {
+export function SolutionFaqs({
+  faqs,
+  heading = "frequently asked questions",
+}: {
+  faqs: { question: string; answer: string }[];
+  heading?: string;
+}) {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -17,7 +23,7 @@ export function SolutionFaqs({ faqs }: { faqs: { question: string; answer: strin
     <section className="w-full bg-white pt-20 pb-24 md:pt-24 md:pb-28">
       <Container>
         <h2 className="header-3 mb-10 text-black max-md:text-[24px]! max-md:leading-8!">
-          frequently asked questions
+          {heading}
         </h2>
         <div className="border-t border-light-grey">
           {faqs.map((faq) => (

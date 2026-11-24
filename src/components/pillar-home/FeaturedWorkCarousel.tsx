@@ -1,71 +1,25 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { caseStudyHref, getCaseStudy, headlineResult } from "@/lib/case-studies";
 
-type CaseStudy = {
+// One card: a photo with its headline result shown while the card is
+// active. Cards without a stat fall back to a title overlay; cards with an
+// `href` link to their case study. Build the list with featuredWorkItems()
+// (./featured-work.ts) so entries in case-studies.ts stay the source.
+export type FeaturedWorkItem = {
   slug: string;
   title: string;
   image: string;
-  // Headline result shown over the card while it's active. Cards without
-  // one fall back to the title overlay.
   stat?: {
-    // Line shown at the top of the card; defaults to the case study title.
+    // Line shown at the top of the card; defaults to the title.
     eyebrow?: string;
     value: string;
     label: string;
   };
+  href?: string;
 };
-
-const CASE_STUDIES: CaseStudy[] = [
-  {
-    slug: "story-of-us",
-    title: "The Story of Us",
-    image: "/images/experiential/case-studies/story-of-us.png",
-    stat: {
-      value: "One",
-      label: "Guinness World Record",
-    },
-  },
-  {
-    slug: "go2022",
-    title: "Go2022",
-    image: "/images/experiential/case-studies/go2022.png",
-    stat: {
-      value: "800+",
-      label: "Attendees",
-    },
-  },
-  {
-    slug: "global-executive-partner-summit",
-    title: "Global Executive Partner Summit",
-    image: "/images/experiential/case-studies/global-executive-partner-summit.jpeg",
-    stat: {
-      value: "4",
-      label: "Day global summit",
-    },
-  },
-  {
-    slug: "no-quiet-please",
-    title: "No Quiet Please",
-    image: "/images/experiential/case-studies/no-quiet-please.png",
-    stat: {
-      value: "One",
-      label: "Clio Award",
-    },
-  },
-  {
-    slug: "aerofit-mobile-tour",
-    title: "Aerofit Mobile Tour",
-    image: "/images/experiential/case-studies/aerofit-mobile-tour.png",
-    stat: {
-      value: "13,811",
-      label: "Total product trials",
-    },
-  },
-];
 
 const ITEM_WIDTH = 442;
 const ITEM_HEIGHT = 294;
@@ -85,27 +39,9 @@ const FOCAL_RATIO = 0.58;
 // scrolling stops (higher = faster), so one card always settles at full size.
 const SNAP_RATE = 8;
 
-// Render the case study list 3x so the track can be nudged in either
-// direction indefinitely; the offset wraps by one set's width once it
-// drifts past the middle copy, so the loop never visibly resets.
-// Cards with an entry in case-studies.ts take their title, image and first
-// result from it and link to its page; the rest show the fallback copy above
-// and don't link until their case study is written.
-const ITEMS: (CaseStudy & { href?: string })[] = CASE_STUDIES.map((item) => {
-  const study = getCaseStudy("experiential-marketing", item.slug);
-  if (!study) return item;
-  const result = headlineResult(study);
-  return {
-    slug: item.slug,
-    title: study.title,
-    image: study.image.src,
-    stat: result ? { value: result.value, label: result.label } : undefined,
-    href: caseStudyHref(study),
-  };
-});
-
-const TRACK_ITEMS = [...ITEMS, ...ITEMS, ...ITEMS];
-const SET_WIDTH = CASE_STUDIES.length * STEP;
+// The list renders 3x so the track can be nudged in either direction
+// indefinitely; the offset wraps by one set's width once it drifts past the
+// middle copy, so the loop never visibly resets.
 const EXTRA_WIDTH = ENLARGED_WIDTH - ITEM_WIDTH;
 // Fallback section width for the server render, before it can be measured.
 const DEFAULT_SECTION_WIDTH = 1440;
@@ -120,8 +56,8 @@ type CardLayout = { x: number; y: number; width: number; height: number; weight:
 // cards straddling the focal point always sum to 1 (smoothstep is
 // symmetric), so the total extra width in the row stays constant and cards
 // away from the focal point never drift.
-function computeLayout(offset: number, focalX: number): CardLayout[] {
-  const weights = TRACK_ITEMS.map((_, i) => {
+function computeLayout(offset: number, focalX: number, count: number): CardLayout[] {
+  const weights = Array.from({ length: count }, (_, i) => {
     const center = offset + i * STEP + ITEM_WIDTH / 2;
     const t = Math.max(0, 1 - Math.abs(center - focalX) / STEP);
     return smoothstep(t);
@@ -146,9 +82,9 @@ function snapDelta(offset: number, focalX: number) {
   return wrapped > STEP / 2 ? wrapped - STEP : wrapped;
 }
 
-const INITIAL_OFFSET =
-  -SET_WIDTH + snapDelta(-SET_WIDTH, DEFAULT_SECTION_WIDTH * FOCAL_RATIO);
-const INITIAL_LAYOUT = computeLayout(INITIAL_OFFSET, DEFAULT_SECTION_WIDTH * FOCAL_RATIO);
+function initialOffset(setWidth: number) {
+  return -setWidth + snapDelta(-setWidth, DEFAULT_SECTION_WIDTH * FOCAL_RATIO);
+}
 
 type CursorMode = "idle" | "left" | "right" | "view";
 type Point = { x: number; y: number };
@@ -156,13 +92,18 @@ type Point = { x: number; y: number };
 // Edge zones keep priority so scrolling always works; otherwise the cursor
 // reads "view" while it sits over the active (mostly enlarged) card, if that
 // card links to a case study.
-function cursorModeFor(speed: number, pointer: Point | null, layout: CardLayout[]): CursorMode {
+function cursorModeFor(
+  speed: number,
+  pointer: Point | null,
+  layout: CardLayout[],
+  track: FeaturedWorkItem[]
+): CursorMode {
   if (speed < 0) return "left";
   if (speed > 0) return "right";
   if (!pointer) return "idle";
   const overActive = layout.some(
     (card, i) =>
-      TRACK_ITEMS[i]?.href !== undefined &&
+      track[i]?.href !== undefined &&
       card.weight > 0.5 &&
       pointer.x >= card.x &&
       pointer.x <= card.x + card.width &&
@@ -172,10 +113,23 @@ function cursorModeFor(speed: number, pointer: Point | null, layout: CardLayout[
   return overActive ? "view" : "idle";
 }
 
-export function FeaturedWorkCarousel() {
+export function FeaturedWorkCarousel({
+  items,
+  label = "Featured Work",
+}: {
+  items: FeaturedWorkItem[];
+  label?: string;
+}) {
+  const track = useMemo(() => [...items, ...items, ...items], [items]);
+  const setWidth = items.length * STEP;
+  const startOffset = initialOffset(setWidth);
+  const initialLayout = useMemo(
+    () => computeLayout(initialOffset(setWidth), DEFAULT_SECTION_WIDTH * FOCAL_RATIO, track.length),
+    [setWidth, track.length]
+  );
   const sectionRef = useRef<HTMLDivElement>(null);
   const cursorRef = useRef<HTMLDivElement>(null);
-  const offsetRef = useRef(INITIAL_OFFSET);
+  const offsetRef = useRef(startOffset);
   const speedRef = useRef(0);
   const frameRef = useRef<number | null>(null);
   const lastTsRef = useRef<number | null>(null);
@@ -191,7 +145,7 @@ export function FeaturedWorkCarousel() {
   const itemRefs = useRef<Array<HTMLDivElement | null>>([]);
   const overlayRefs = useRef<Array<HTMLDivElement | null>>([]);
   const statRefs = useRef<Array<HTMLDivElement | null>>([]);
-  const layoutRef = useRef<CardLayout[]>(INITIAL_LAYOUT);
+  const layoutRef = useRef<CardLayout[]>(initialLayout);
   // Pointer position relative to the section, or null when outside it.
   const pointerRef = useRef<Point | null>(null);
   const cursorModeRef = useRef<CursorMode>("idle");
@@ -199,11 +153,11 @@ export function FeaturedWorkCarousel() {
   // Cards move under a stationary pointer (scrolling, snapping), so this is
   // re-checked every frame as well as on pointer move.
   const syncCursorMode = useCallback(() => {
-    const next = cursorModeFor(speedRef.current, pointerRef.current, layoutRef.current);
+    const next = cursorModeFor(speedRef.current, pointerRef.current, layoutRef.current, track);
     if (next === cursorModeRef.current) return;
     cursorModeRef.current = next;
     setCursorMode(next);
-  }, []);
+  }, [track]);
 
   useEffect(() => {
     const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -219,7 +173,7 @@ export function FeaturedWorkCarousel() {
     const focalX = () => section.clientWidth * FOCAL_RATIO;
 
     const applyLayout = () => {
-      const layout = computeLayout(offsetRef.current, focalX());
+      const layout = computeLayout(offsetRef.current, focalX(), track.length);
       layoutRef.current = layout;
       layout.forEach((card, i) => {
         const el = itemRefs.current[i];
@@ -256,8 +210,8 @@ export function FeaturedWorkCarousel() {
 
       if (speedRef.current !== 0) {
         offsetRef.current -= speedRef.current * dt;
-        if (offsetRef.current <= -2 * SET_WIDTH) offsetRef.current += SET_WIDTH;
-        if (offsetRef.current >= 0) offsetRef.current -= SET_WIDTH;
+        if (offsetRef.current <= -2 * setWidth) offsetRef.current += setWidth;
+        if (offsetRef.current >= 0) offsetRef.current -= setWidth;
       } else {
         const delta = snapDelta(offsetRef.current, focalX());
         offsetRef.current += delta * (1 - Math.exp(-SNAP_RATE * dt));
@@ -275,7 +229,7 @@ export function FeaturedWorkCarousel() {
       if (frameRef.current) cancelAnimationFrame(frameRef.current);
       lastTsRef.current = null;
     };
-  }, [reducedMotion, syncCursorMode]);
+  }, [reducedMotion, syncCursorMode, setWidth, track.length]);
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     const section = sectionRef.current;
@@ -313,9 +267,11 @@ export function FeaturedWorkCarousel() {
   };
 
   return (
-    <section className="relative w-full py-20 md:py-28">
+    // No bottom padding: the cards end the dark band and overlap the white
+    // section below it (see ExperientialHome).
+    <section className="relative w-full pt-20 md:pt-28">
       <div className="relative z-10 mb-10 flex w-full items-center gap-6 pl-[var(--grid-margin)] md:pl-[var(--grid-margin-md)]">
-        <h5 className="header-5 shrink-0 text-white">Featured Work</h5>
+        <h5 className="header-5 shrink-0 text-white">{label}</h5>
         <span className="h-px flex-1 bg-white/30" />
       </div>
 
@@ -332,8 +288,8 @@ export function FeaturedWorkCarousel() {
             whole row up so the enlarged card overlaps the divider line
             while the smaller cards stay clear of it. */}
         <div className="relative" style={{ height: ENLARGED_HEIGHT }}>
-          {TRACK_ITEMS.map((item, i) => {
-            const initial = INITIAL_LAYOUT[i];
+          {track.map((item, i) => {
+            const initial = initialLayout[i];
 
             return (
               <div

@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Container } from "@/components/ui/Container";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { Media } from "@/components/experiential/solutions/Media";
@@ -26,28 +25,14 @@ export function PillarTeamSections({ team, pillar }: { team: PillarTeam; pillar:
   const surface = SURFACES[pillar.surface];
   // Leaders always sit on white, even on dark pillars.
   const leadersSurface = SURFACES.light;
+  // Without its own heading, the team grid carries on from the leaders.
+  const membersSurface = team.membersHeading ? surface : leadersSurface;
 
   return (
     <div id="team" className="scroll-mt-[var(--header-height)]">
       <section className={`w-full ${leadersSurface.section} pt-20 pb-24 md:pt-28 md:pb-32`}>
         <Container className="flex flex-col gap-12 md:gap-16">
-          <div className="flex flex-col items-start gap-4">
-            <Eyebrow>Our people</Eyebrow>
-            <h2 className="header-2 max-md:text-[28px]! max-md:leading-9!">meet the team</h2>
-            <p className={`max-w-[760px] text-lg leading-7 md:text-xl md:leading-8 ${leadersSurface.muted}`}>
-              {team.intro}
-            </p>
-          </div>
-          {team.leadersHeading && (
-            <div className="flex flex-col gap-3">
-              <h3 className="header-4 max-md:text-[20px]! max-md:leading-7!">{team.leadersHeading}</h3>
-              {team.leadersIntro && (
-                <p className={`max-w-[760px] text-base leading-6 md:text-lg md:leading-7 ${leadersSurface.muted}`}>
-                  {team.leadersIntro}
-                </p>
-              )}
-            </div>
-          )}
+          <h2 className="header-2 max-w-[940px] max-md:text-[28px]! max-md:leading-9!">{team.heading ?? "meet the team"}</h2>
           <FadeIn>
             <ul className="grid grid-cols-1 gap-x-6 gap-y-16 md:grid-cols-3">
               {team.leaders.map((leader) => (
@@ -61,16 +46,24 @@ export function PillarTeamSections({ team, pillar }: { team: PillarTeam; pillar:
       </section>
 
       {team.members.length > 0 && (
-        <section className={`w-full ${surface.section} border-t pt-20 pb-24 md:pt-24 md:pb-32 ${surface.rule}`}>
+        <section
+          className={`w-full ${membersSurface.section} ${
+            team.membersHeading
+              ? `border-t pt-20 pb-24 md:pt-24 md:pb-32 ${membersSurface.rule}`
+              : "-mt-8 pb-24 md:-mt-12 md:pb-32"
+          }`}
+        >
           <Container className="flex flex-col gap-12">
-            <div className="flex flex-col gap-4">
-              <h3 className="header-2 max-md:text-[28px]! max-md:leading-9!">{team.membersHeading ?? "The team"}</h3>
-              {team.membersIntro && (
-                <p className={`max-w-[760px] text-lg leading-7 md:text-xl md:leading-8 ${surface.muted}`}>
-                  {team.membersIntro}
-                </p>
-              )}
-            </div>
+            {team.membersHeading && (
+              <div className="flex flex-col gap-4">
+                <h3 className="header-2 max-md:text-[28px]! max-md:leading-9!">{team.membersHeading}</h3>
+                {team.membersIntro && (
+                  <p className={`max-w-[760px] text-lg leading-7 md:text-xl md:leading-8 ${membersSurface.muted}`}>
+                    {team.membersIntro}
+                  </p>
+                )}
+              </div>
+            )}
             <ul className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 lg:grid-cols-6">
               {team.members.map((member) => (
                 <li key={member.name} className="flex flex-col gap-3">
@@ -79,7 +72,7 @@ export function PillarTeamSections({ team, pillar }: { team: PillarTeam; pillar:
                   </div>
                   <div className="flex flex-col gap-1">
                     <h4 className="text-sm leading-5 font-bold tracking-[0.12em] uppercase">{member.name}</h4>
-                    <p className={`text-sm leading-5 ${surface.muted}`}>{member.title}</p>
+                    <p className={`text-sm leading-5 ${membersSurface.muted}`}>{member.title}</p>
                   </div>
                 </li>
               ))}

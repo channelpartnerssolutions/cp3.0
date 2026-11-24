@@ -3,6 +3,7 @@ import { Benefits } from "@/components/careers/Benefits";
 import { CareersCta } from "@/components/careers/CareersCta";
 import { CareersHero } from "@/components/careers/CareersHero";
 import { CareersStats } from "@/components/careers/CareersStats";
+import { CultureVideos } from "@/components/careers/CultureVideos";
 import { JobMap } from "@/components/careers/JobMap";
 import { SolutionsCarousel } from "@/components/careers/SolutionsCarousel";
 import { FadeIn } from "@/components/ui/FadeIn";
@@ -29,6 +30,9 @@ export default async function CareersPage() {
       </FadeIn>
       <FadeIn>
         <JobMap jobs={jobs} />
+      </FadeIn>
+      <FadeIn>
+        <CultureVideos />
       </FadeIn>
       <FadeIn>
         <SolutionsCarousel />

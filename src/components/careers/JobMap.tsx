@@ -511,17 +511,17 @@ export function JobMap({ jobs }: { jobs: Job[] }) {
         href={applyUrlFor(job)}
         target="_blank"
         rel="noopener noreferrer"
-        className="group relative flex flex-1 flex-col items-start gap-1 text-left"
+        className="group relative flex min-w-0 flex-1 flex-col items-start gap-1 text-left"
       >
-        <p className="text-base font-bold text-black group-hover:text-cerulean">{job.title}</p>
-        <p className="text-sm text-middle-grey">
+        <p className="text-base font-bold break-words text-white group-hover:underline">{job.title}</p>
+        <p className="text-sm text-white/60">
           {job.city}, {job.state}
         </p>
         {formatPayRange(job.minPay, job.maxPay) && (
-          <p className="text-sm text-black">{formatPayRange(job.minPay, job.maxPay)}</p>
+          <p className="text-sm text-white">{formatPayRange(job.minPay, job.maxPay)}</p>
         )}
-        <p className="text-xs text-middle-grey">Req ID: {job.requisitionId}</p>
-        <span className="mt-1 text-xs font-bold uppercase tracking-[0.6px] text-cerulean group-hover:underline">
+        <p className="text-xs text-white/60">Req ID: {job.requisitionId}</p>
+        <span className="mt-1 text-xs font-bold uppercase tracking-[0.6px] text-white underline-offset-4 group-hover:underline">
           View &amp; Apply
           <span className="sr-only"> (opens in a new tab)</span>
         </span>
@@ -532,7 +532,7 @@ export function JobMap({ jobs }: { jobs: Job[] }) {
           onClick={() => flyToJob(job)}
           aria-label={`Show ${job.title} in ${job.city}, ${job.state} on the map`}
           title="Show on map"
-          className="-m-2 shrink-0 rounded-lg p-2 text-middle-grey transition-colors hover:text-cerulean"
+          className="-my-2 shrink-0 rounded-lg p-2 text-accent-green transition-colors hover:text-white"
         >
           <MapPin aria-hidden="true" className="size-5" strokeWidth={2} />
         </button>
@@ -632,22 +632,22 @@ export function JobMap({ jobs }: { jobs: Job[] }) {
   return (
     <section
       id="open-positions"
-      className="w-full scroll-mt-[var(--header-height)] bg-white pb-[80px] pt-[40px]"
+      className="w-full scroll-mt-[var(--header-height)] bg-white pt-[40px]"
     >
-      <div className="flex flex-col gap-6 lg:h-[720px] lg:flex-row">
+      <div className="flex flex-col lg:h-[720px] lg:flex-row">
         {/* isolate: Leaflet panes use z-index 400–1000; keep them below the fixed header (z-60). */}
         <div className="relative isolate h-[420px] w-full overflow-hidden lg:h-full lg:flex-1">
           <div ref={mapContainerRef} className="size-full" />
         </div>
 
-        <Container className="lg:w-auto lg:shrink-0 lg:grow-0 lg:px-0 lg:pr-6">
-          <aside className="flex w-full flex-col gap-4 lg:h-full lg:w-[380px] lg:overflow-y-auto">
+        <Container className="bg-near-black pt-4 pb-8 lg:w-auto lg:shrink-0 lg:grow-0 lg:px-6 lg:pb-6">
+          <aside className="flex w-full flex-col gap-4 overflow-x-hidden [color-scheme:dark] lg:h-full lg:w-[380px] lg:overflow-y-auto">
             <div className="flex items-center justify-between">
-              <p className="header-6 text-black">Open Positions</p>
+              <p className="text-lg font-bold text-white">Open Positions</p>
               <button
                 type="button"
                 onClick={resetFilters}
-                className="text-xs font-bold uppercase tracking-[0.6px] text-cerulean hover:underline"
+                className="text-xs font-bold uppercase tracking-[0.6px] text-white underline-offset-4 hover:underline"
               >
                 Reset
               </button>
@@ -659,7 +659,7 @@ export function JobMap({ jobs }: { jobs: Job[] }) {
               onChange={(event) => setKeyword(event.target.value)}
               placeholder="Search by keyword"
               aria-label="Search by keyword"
-              className="w-full rounded border border-light-grey px-3 py-2 text-sm text-black"
+              className="w-full rounded border border-light-grey bg-white px-3 py-2 text-sm text-black [color-scheme:light]"
             />
 
             <div className="grid grid-cols-2 gap-2">
@@ -667,7 +667,7 @@ export function JobMap({ jobs }: { jobs: Job[] }) {
                 value={category}
                 onChange={(event) => setCategory(event.target.value)}
                 aria-label="Filter by category"
-                className="rounded border border-light-grey px-2 py-2 text-sm text-black"
+                className="rounded border border-light-grey bg-white px-2 py-2 text-sm text-black [color-scheme:light]"
               >
                 <option value="">All Categories</option>
                 {availableCategories.map((c) => (
@@ -680,7 +680,7 @@ export function JobMap({ jobs }: { jobs: Job[] }) {
                 value={positionType}
                 onChange={(event) => setPositionType(event.target.value)}
                 aria-label="Filter by position type"
-                className="rounded border border-light-grey px-2 py-2 text-sm text-black"
+                className="rounded border border-light-grey bg-white px-2 py-2 text-sm text-black [color-scheme:light]"
               >
                 <option value="">All Position Types</option>
                 {POSITION_TYPES.map((t) => (
@@ -695,7 +695,7 @@ export function JobMap({ jobs }: { jobs: Job[] }) {
               value={useCurrentLocation ? CURRENT_LOCATION : stateFilter}
               onChange={(event) => handleLocationChange(event.target.value)}
               aria-label="Filter by location"
-              className="w-full rounded border border-light-grey px-2 py-2 text-sm text-black"
+              className="w-full rounded border border-light-grey bg-white px-2 py-2 text-sm text-black [color-scheme:light]"
             >
               <option value="">Location</option>
               <option value={CURRENT_LOCATION}>Use Current Location</option>
@@ -706,34 +706,34 @@ export function JobMap({ jobs }: { jobs: Job[] }) {
               ))}
             </select>
             {geoMessage && (
-              <p role="status" className="-mt-2 text-xs text-middle-grey">
+              <p role="status" className="-mt-2 text-xs text-white/60">
                 {geoMessage}
               </p>
             )}
 
-            <p className="text-xs uppercase tracking-[0.6px] text-middle-grey">
+            <p className="text-xs uppercase tracking-[0.6px] text-white/60">
               Showing {listedJobs.length + unmappedJobs.length} of {filteredJobs.length} position
               {filteredJobs.length === 1 ? "" : "s"}
             </p>
 
-            <div className="relative flex flex-col divide-y divide-light-grey overflow-y-auto lg:max-h-full">
+            <div className="relative flex flex-col divide-y divide-white/15 overflow-x-hidden overflow-y-auto lg:max-h-full">
               {listedJobs.map((job) => renderJobRow(job, true))}
               {unmappedJobs.length > 0 && (
                 <>
-                  <p className="pb-2 pt-6 text-xs font-bold uppercase tracking-[0.6px] text-middle-grey">
+                  <p className="pb-2 pt-6 text-xs font-bold uppercase tracking-[0.6px] text-white/60">
                     Location not mapped
                   </p>
                   {unmappedJobs.map((job) => renderJobRow(job, false))}
                 </>
               )}
               {jobs.length === 0 ? (
-                <p className="py-4 text-sm text-middle-grey">
+                <p className="py-4 text-sm text-white/70">
                   Job listings are temporarily unavailable.{" "}
                   <a
                     href={ICIMS_SEARCH_URL}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-cerulean underline underline-offset-2"
+                    className="text-white underline underline-offset-2"
                   >
                     Browse all openings on our careers portal
                   </a>
@@ -742,7 +742,7 @@ export function JobMap({ jobs }: { jobs: Job[] }) {
               ) : (
                 listedJobs.length === 0 &&
                 unmappedJobs.length === 0 && (
-                  <p className="py-4 text-sm text-middle-grey">
+                  <p className="py-4 text-sm text-white/70">
                     No open positions in view — try zooming out or clearing filters.
                   </p>
                 )

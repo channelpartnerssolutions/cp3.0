@@ -29,7 +29,7 @@ export const pillars: PillarConfig[] = [
     ctaLabel: "Start Your Project",
     ctaVariant: "primary",
     // TODO(content): placeholder headline and description.
-    taglineLines: ["From Blueprint", "to Grand Opening"],
+    taglineLines: ["From the Blueprint", "to the Grand Opening"],
     description:
       "Before a single product hits the shelf, the space has to be ready. We map, build, install and stock your footprint so every location opens on time and on brand.",
     accentColor: "var(--color-cerulean)",

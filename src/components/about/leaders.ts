@@ -11,7 +11,7 @@ export type Leader = {
 export const CEO: Leader = {
   name: "Jim Fulk",
   title: "CEO, Channel Partners",
-  image: "/images/about/jim-modal.png",
+  image: "/images/about/jim-modal.webp",
   bio: "Jim leads Channel Partners with 20 years in retail merchandising and executive leadership. Before joining, he served as CEO of White Hawk, Executive Vice President of RMSe, and Executive Vice President of the Install division at BDS. He has also served on the Board of Directors of WARES. Jim studied business law while serving in the United States Air Force, a foundation that still shapes how he runs the business.",
   linkedIn: "https://www.linkedin.com/in/jimfulk/",
 };
@@ -34,7 +34,7 @@ export const LEADERS: Leader[] = [
   {
     name: "Jay Chandran",
     title: "EVP IT & Analytics",
-    image: "/images/about/leader-jay.png",
+    image: "/images/about/leader-jay.webp",
     bio: "Jay leads Information Technology and Analytics as Head of Technology and AI Innovation. He has driven large-scale digital transformation across retail, media, travel, and private equity-backed companies, including senior roles at QVC, HSN, VGL Group, and Lazydays RV, where he modernized e-commerce, mobile, and cloud platforms across 24 locations. He holds dual master's degrees in AI and Business Analytics and in Cybersecurity Intelligence, is a certified PMP, and completed AI strategy executive education at MIT Sloan.",
     linkedIn: "https://www.linkedin.com/in/jay-chandran-tech-exec/",
   },
