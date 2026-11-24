@@ -71,7 +71,7 @@ export const pillars: PillarConfig[] = [
     switchLabel: "TRAINING",
     ctaLabel: "Schedule a Consult",
     ctaVariant: "solid-medium-blue",
-    taglineLines: ["From Curriculum", "to Confidence"],
+    taglineLines: ["From the First Day", "to the Front Line"],
     description:
       "Your brand strategy is only as good as the weakest point in the delivery chain, we turn your brand knowledge into a scalable system of learning, turning employees into brand champions.",
     accentColor: "var(--color-cerulean)",
